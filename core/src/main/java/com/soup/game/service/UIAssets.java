@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.soup.game.intf.Service;
 
 public class UIAssets implements Service {
-    public static BitmapFont getFont() {
-        BitmapFont font = null;
+    private final BitmapFont font;
+
+    public UIAssets() {
         FreeTypeFontGenerator generator =
             new FreeTypeFontGenerator(Gdx.files.internal("fonts/PressStart2P.ttf"));
 
@@ -19,6 +20,9 @@ public class UIAssets implements Service {
 
         font = generator.generateFont(params);
         generator.dispose();
+    }
+
+    public BitmapFont getFont() {
         return font;
     }
 }

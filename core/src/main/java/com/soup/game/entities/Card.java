@@ -5,7 +5,8 @@ import com.soup.game.intf.Entity;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
-public class Card extends Actor implements Entity {
+public class Card extends Actor
+    implements Entity {
     private static long NEXT_ID = 1;
     private final long id;
     private final Suit suit;
@@ -13,7 +14,8 @@ public class Card extends Actor implements Entity {
     private final float points;
     private final boolean isJoker;
 
-    public Card(Suit suit, Rank rank, float points, boolean isJoker) {
+    public Card(Suit suit, Rank rank, float points,
+                boolean isJoker) {
         this.id = NEXT_ID++;
         this.suit = suit;
         this.rank = rank;

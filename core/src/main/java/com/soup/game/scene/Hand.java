@@ -10,9 +10,13 @@ public class Hand {
     private static final int MAX_SIZE = 8;
     private final List<Card> cards;
     private HandType hand;
+    private int selectionIndex = -1;
+    private final List<Card> selected;
+    private boolean isReady;
 
     public Hand() {
         this.cards = new ArrayList<>();
+        this.selected = new ArrayList<>();
     }
 
     public List<Card> getCards() {
@@ -23,8 +27,20 @@ public class Hand {
         this.cards.add(c);
     }
 
-    public Card get(int index) {
-        return this.cards.get(index);
+    public void select(Card c) {
+        selectionIndex = cards.indexOf(c);
+        if (selectionIndex >= 0 && !selected.contains(c)) {
+            selected.add(c);
+        }
+    }
+
+    public List<Card> getSelectedCards() {
+        return selected;
+    }
+
+    public void clearSelection() {
+        selectionIndex = -1;
+        selected.clear();
     }
 
     public void remove(Card c) {
@@ -46,12 +62,17 @@ public class Hand {
     public HandType getHand() {
         return hand;
     }
-
     public float getValue(HandType hand, List<Card> c) {
         return hand.calc(c);
     }
-
     public void clear() {
-        cards.clear();
+        this.cards.clear();
+    }
+
+    public boolean isReady() {
+        return isReady;
+    }
+    public void setReady(boolean ready) {
+        this.isReady = ready;
     }
 }

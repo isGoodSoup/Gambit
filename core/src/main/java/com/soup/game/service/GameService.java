@@ -6,6 +6,8 @@ import com.soup.game.meta.GameState;
 import com.soup.game.scene.Hand;
 import com.soup.game.scene.Table;
 
+import java.util.List;
+
 public class GameService implements Service {
     private final Table table;
 
@@ -13,12 +15,14 @@ public class GameService implements Service {
         this.table = table;
     }
 
+    public Table getTable() {
+        return table;
+    }
+
     public void update(float delta) {
         switch(table.getState()) {
             case DEALING -> deal();
-            case PLAYER_TURN -> {
-                // TODO
-            }
+            case PLAYER_TURN -> playHand();
             case SCORING -> scoreHand();
             case DISCARDING -> discardHand();
         }
@@ -35,6 +39,21 @@ public class GameService implements Service {
             hand.add(c);
         }
         table.setState(GameState.PLAYER_TURN);
+    }
+
+    private void playHand() {
+        Hand hand = table.getHand();
+        List<Card> selected = hand.getSelectedCards();
+
+        if(hand.isReady()) {
+            for(Card c : selected) {
+                table.add(c);
+                hand.remove(c);
+            }
+
+            hand.clearSelection();
+            table.setState(GameState.SCORING);
+        }
     }
 
     private void scoreHand() {

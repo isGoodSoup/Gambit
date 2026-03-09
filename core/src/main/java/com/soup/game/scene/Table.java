@@ -15,6 +15,10 @@ public class Table {
     private float score;
     private GameState state;
 
+    private int round;
+    private int chips;
+    private float multiplier;
+
     public Table() {
         this.deck = new Deck();
         deck.populate();
@@ -29,6 +33,11 @@ public class Table {
 
     public Deck getDeck() { return deck; }
     public Hand getHand() { return hand; }
+
+    public void add(Card c) {
+        this.inPlay.add(c);
+    }
+
     public Deck getDiscarded() { return discarded; }
     public List<Card> getInPlay() { return inPlay; }
 
@@ -40,5 +49,21 @@ public class Table {
 
     public void discard(Card c) {
         discarded.add(c);
+    }
+
+    public void roundUp(int i) {
+        this.round += i;
+    }
+
+    public void addChip(int i) {
+        this.chips += i;
+    }
+
+    public void lose() {
+        this.chips = 0;
+    }
+
+    public void multiply(float i) {
+        this.multiplier += i;
     }
 }
