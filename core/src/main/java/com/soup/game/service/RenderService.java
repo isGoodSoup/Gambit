@@ -18,7 +18,6 @@ public class RenderService implements Service {
     private final int jokerCols;
     private final int jokerRows;
 
-
     public RenderService(String spritesheetPath, String jokersPath,
                          String backPath, int jokerCols) {
         this.sheet = new Texture(spritesheetPath);

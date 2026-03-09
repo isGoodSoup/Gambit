@@ -1,5 +1,6 @@
 package com.soup.game.scene;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
 import com.soup.game.meta.HandType;
 
@@ -8,10 +9,10 @@ import java.util.List;
 
 public class Hand {
     private static final int MAX_SIZE = 8;
+    private static final int MAX_SELECT = 5;
     private final List<Card> cards;
-    private HandType hand;
-    private int selectionIndex = -1;
     private final List<Card> selected;
+    private HandType hand;
     private boolean isReady;
 
     public Hand() {
@@ -28,10 +29,18 @@ public class Hand {
     }
 
     public void select(Card c) {
-        selectionIndex = cards.indexOf(c);
-        if (selectionIndex >= 0 && !selected.contains(c)) {
-            selected.add(c);
+        if(selected.contains(c)) {
+            c.deselect();
+            selected.remove(c);
+            return;
         }
+
+        if(selected.size() >= MAX_SELECT) {
+            return;
+        }
+
+        selected.add(c);
+        c.select();
     }
 
     public List<Card> getSelectedCards() {
@@ -39,7 +48,6 @@ public class Hand {
     }
 
     public void clearSelection() {
-        selectionIndex = -1;
         selected.clear();
     }
 

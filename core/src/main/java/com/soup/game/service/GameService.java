@@ -1,5 +1,6 @@
 package com.soup.game.service;
 
+import com.badlogic.gdx.Gdx;
 import com.soup.game.entities.Card;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.GameState;
