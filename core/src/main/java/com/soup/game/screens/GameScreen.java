@@ -40,7 +40,7 @@ public class GameScreen implements Screen {
         for(Card c : gameService.getTable().getHand().getCards()) {
             if(c != null) {
                 service.get(RenderService.class).drawCard(c, startX, 150f);
-                startX += 50f;
+                startX += 48f;
             }
         }
         stage.getBatch().end();
