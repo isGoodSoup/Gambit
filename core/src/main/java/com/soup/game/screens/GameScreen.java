@@ -12,6 +12,8 @@ import com.soup.game.scene.Hand;
 import com.soup.game.service.GameService;
 import com.soup.game.service.ServiceFactory;
 
+import java.util.List;
+
 public class GameScreen implements Screen {
     private final ServiceFactory service;
     private final Stage stage;
@@ -20,35 +22,50 @@ public class GameScreen implements Screen {
     public GameScreen(ServiceFactory service, Stage stage) {
         this.service = service;
         this.stage = stage;
-    }
-
-    @Override
-    public void show() {
-        gameService = service.get(GameService.class);
-        Hand hand = gameService.getTable().getHand();
-        Gdx.input.setInputProcessor(stage);
-
-        gameService.update(0f);
-
-        float startX = Gdx.graphics.getWidth()/2f;
-        float handY = 150f;
-
-        for(Card c : hand.getCards()) {
-            c.setPosition(startX, handY);
-            stage.addActor(c);
-            startX += 48f;
-        }
 
         stage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Actor target = event.getTarget();
                 if(target instanceof Card card) {
-                    hand.select(card);
+                    gameService.getTable().getHand().select(card);
                 }
             }
         });
+    }
 
+    @Override
+    public void show() {
+        gameService = service.get(GameService.class);
+        gameService.update(0f);
+        Hand hand = gameService.getTable().getHand();
+        List<Card> snapshot = List.copyOf(hand.getCards());
+        Gdx.input.setInputProcessor(stage);
+
+        float handY = 150f;
+        float overlapFactor = 0.6f;
+        int numCards = snapshot.size();
+        if(numCards == 0) {
+            return;
+        }
+
+        float cardWidth = snapshot.getFirst().getCardWidth();
+        float spacing = cardWidth * overlapFactor;
+
+        float totalWidth = spacing * (numCards - 1) + cardWidth;
+
+        float maxHandWidth = Gdx.graphics.getWidth() * 0.9f;
+        if(totalWidth > maxHandWidth) {
+            spacing = (maxHandWidth - cardWidth) / (numCards - 1);
+            totalWidth = maxHandWidth;
+        }
+
+        float startX = (Gdx.graphics.getWidth() - totalWidth) / 2f;
+        for(int i = 0; i < numCards; i++) {
+            Card c = snapshot.get(i);
+            c.setPosition(startX + i * spacing, handY);
+            stage.addActor(c);
+        }
     }
 
     @Override

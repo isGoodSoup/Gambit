@@ -23,6 +23,7 @@ public class Card extends Actor
     private final float points;
     private final float moveAmount = 30f;
     private final float duration = 0.15f;
+    private float width, height;
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
@@ -34,8 +35,10 @@ public class Card extends Actor
         this.points = points;
         this.isJoker = isJoker;
         this.region = region;
+        this.width = region.getRegionWidth()/2f;
+        this.height = region.getRegionHeight()/2f;
 
-        setSize(region.getRegionWidth()/2f, region.getRegionHeight()/2f);
+        setSize(width, height);
         setTouchable(Touchable.enabled);
 
         addListener(new InputListener() {
@@ -52,11 +55,13 @@ public class Card extends Actor
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
                 isDragging = true;
                 moveBy(x - offsetX, y - offsetY);
+                setSize(width + 25f, height + 25f);
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 isDragging = false;
+                setSize(width, height);
             }
         });
     }
@@ -116,5 +121,11 @@ public class Card extends Actor
     }
     public boolean isSelected() {
         return isSelected;
+    }
+    public float getCardWidth() {
+        return width;
+    }
+    public float getCardHeight() {
+        return height;
     }
 }
