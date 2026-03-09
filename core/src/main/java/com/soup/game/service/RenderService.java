@@ -1,17 +1,12 @@
 package com.soup.game.service;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.soup.game.entities.Card;
-import com.soup.game.entities.Joker;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
 public class RenderService implements Service {
-    private final Stage stage;
     private final Texture sheet;
     private final Texture jokers;
     private final TextureRegion[][] cardRegions;
@@ -24,9 +19,8 @@ public class RenderService implements Service {
     private final int jokerRows;
 
 
-    public RenderService(Stage stage, String spritesheetPath, String jokersPath,
+    public RenderService(String spritesheetPath, String jokersPath,
                          String backPath, int jokerCols) {
-        this.stage = stage;
         this.sheet = new Texture(spritesheetPath);
         this.jokers = new Texture(jokersPath);
         this.backCard = new TextureRegion(new Texture(backPath));
@@ -43,27 +37,22 @@ public class RenderService implements Service {
         this.jokerRegions = TextureRegion.split(jokers, jokerWidth, jokerHeight);
     }
 
-    public TextureRegion getRegion(Card card) {
-        if(card instanceof Joker) {
-            int row = card.getSuit().ordinal();
-            int col = 0;
-            return jokerRegions[row][col];
-        }
-
-        int row = switch(card.getSuit()) {
+    public TextureRegion getRegion(Suit suit, Rank rank) {
+        int row = switch(suit) {
             case DIAMONDS -> 0;
             case HEARTS -> 1;
             case SPADES -> 2;
             case CLUBS -> 3;
         };
 
-        int col = card.getRank().ordinal();
+        int col = rank.ordinal();
         return cardRegions[row][col];
     }
 
-
-    public void drawCard(Card card, float x, float y) {
-        stage.getBatch().draw(getRegion(card), x, y);
+    public TextureRegion getRegion(Suit suit) {
+        int row = suit.ordinal();
+        int col = 0;
+        return jokerRegions[row][col];
     }
 
     public void dispose() {

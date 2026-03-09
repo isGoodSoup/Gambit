@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Card;
 import com.soup.game.service.GameService;
-import com.soup.game.service.RenderService;
 import com.soup.game.service.ServiceFactory;
 
 public class GameScreen implements Screen {
@@ -22,45 +21,30 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         gameService = service.get(GameService.class);
+        Gdx.input.setInputProcessor(stage);
+
+        gameService.update(0f);
+
+        float startX = Gdx.graphics.getWidth()/2.5f;
+        for(Card c : gameService.getTable().getHand().getCards()) {
+            c.setPosition(startX, 150f);
+            stage.addActor(c);
+            startX += 48f;
+        }
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.1f, 0.5f, 0.3f, 1f);
         gameService.update(delta);
-        stage.draw();
         stage.act(delta);
-
-        float startX = Gdx.graphics.getWidth()/3f;
-
-        stage.getBatch().begin();
-        if(gameService.getTable().getHand().getCards() == null) {
-            return;
-        }
-        for(Card c : gameService.getTable().getHand().getCards()) {
-            if(c != null) {
-                service.get(RenderService.class).drawCard(c, startX, 150f);
-                startX += 48f;
-            }
-        }
-        stage.getBatch().end();
+        stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void hide() {
-    }
+    @Override public void resize(int width, int height) {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {

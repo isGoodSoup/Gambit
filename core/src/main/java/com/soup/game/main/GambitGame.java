@@ -2,6 +2,7 @@ package com.soup.game.main;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.soup.game.scene.Table;
 import com.soup.game.screens.GameScreen;
 import com.soup.game.service.DeckService;
@@ -15,16 +16,16 @@ public class GambitGame extends Game {
     @Override
     public void create() {
         service = new ServiceFactory();
-        Table table = new Table();
-        Stage stage = new Stage();
-
+        Stage stage = new Stage(new ScreenViewport());
         String sheet = "cards_4x.png";
         String jokers = "jokers_4x.png";
         String back = "cards_back.png";
 
+        service.register(RenderService.class, new RenderService(sheet, jokers, back, 1));
+        Table table = new Table(service.get(RenderService.class));
+
         service.register(DeckService.class, new DeckService(table.getDeck()));
         service.register(GameService.class, new GameService(table, service.get(DeckService.class)));
-        service.register(RenderService.class, new RenderService(stage, sheet, jokers, back, 1));
         setScreen(new GameScreen(service, stage));
     }
 }

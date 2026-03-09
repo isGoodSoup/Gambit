@@ -3,6 +3,7 @@ package com.soup.game.scene;
 import com.soup.game.entities.Card;
 import com.soup.game.entities.Deck;
 import com.soup.game.meta.GameState;
+import com.soup.game.service.RenderService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ public class Table {
     private int chips;
     private float multiplier;
 
-    public Table() {
+    public Table(RenderService renderService) {
         this.deck = new Deck();
-        deck.populate();
+        deck.populate(renderService);
 
         this.hand = new Hand();
         this.discarded = new Deck();
