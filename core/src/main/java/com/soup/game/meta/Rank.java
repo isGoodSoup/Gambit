@@ -13,8 +13,7 @@ public enum Rank {
     TEN(10f),
     JACK(12f),
     QUEEN(13f),
-    KING(14f),
-    JOKER(25f);
+    KING(14f);
 
     private final float points;
 

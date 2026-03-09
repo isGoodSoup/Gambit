@@ -34,10 +34,12 @@ public class GameScreen implements Screen {
         float startX = Gdx.graphics.getWidth()/3f;
 
         stage.getBatch().begin();
+        if(gameService.getTable().getHand().getCards() == null) {
+            return;
+        }
         for(Card c : gameService.getTable().getHand().getCards()) {
             if(c != null) {
-                stage.getBatch().draw(service.get(RenderService.class)
-                    .getRegion(c), startX, 150f);
+                service.get(RenderService.class).drawCard(c, startX, 150f);
                 startX += 50f;
             }
         }

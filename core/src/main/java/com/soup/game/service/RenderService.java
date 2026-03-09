@@ -23,6 +23,7 @@ public class RenderService implements Service {
     private final int jokerCols;
     private final int jokerRows;
 
+
     public RenderService(Stage stage, String spritesheetPath, String jokersPath,
                          String backPath, int jokerCols) {
         this.stage = stage;
@@ -43,13 +44,13 @@ public class RenderService implements Service {
     }
 
     public TextureRegion getRegion(Card card) {
-        if (card.getRank() == Rank.JOKER) {
+        if(card instanceof Joker) {
             int row = card.getSuit().ordinal();
             int col = 0;
             return jokerRegions[row][col];
         }
 
-        int row = switch (card.getSuit()) {
+        int row = switch(card.getSuit()) {
             case DIAMONDS -> 0;
             case HEARTS -> 1;
             case SPADES -> 2;
@@ -62,10 +63,7 @@ public class RenderService implements Service {
 
 
     public void drawCard(Card card, float x, float y) {
-        Batch batch = stage.getBatch();
-        batch.begin();
-        batch.draw(getRegion(card), x, y);
-        batch.end();
+        stage.getBatch().draw(getRegion(card), x, y);
     }
 
     public void dispose() {

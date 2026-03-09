@@ -23,7 +23,7 @@ public class Deck implements Entity {
             for(Rank rank : Rank.values()) {
                 add(new Card(suit, rank, rank.getPoints(), false));
             }
-            add(new Joker(suit, Rank.JOKER, Rank.JOKER.getPoints(), true));
+            add(new Joker(suit, 50f, true));
         }
     }
 

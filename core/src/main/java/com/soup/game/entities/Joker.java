@@ -12,6 +12,11 @@ public class Joker extends Card {
         this.jokerIndex += NEXT_ID;
     }
 
+    public Joker(Suit suit, float points, boolean isJoker) {
+        super(suit, points, isJoker);
+        this.jokerIndex += NEXT_ID;
+    }
+
     public int getJokerIndex() {
         return jokerIndex;
     }
