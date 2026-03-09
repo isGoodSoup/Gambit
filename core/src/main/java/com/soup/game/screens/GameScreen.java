@@ -3,10 +3,12 @@ package com.soup.game.screens;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.soup.game.service.GameService;
 import com.soup.game.service.ServiceFactory;
 
 public class GameScreen implements Screen {
     private final ServiceFactory service;
+    private GameService gameService;
     private Stage stage;
 
     public GameScreen(ServiceFactory service) {
@@ -16,7 +18,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         stage = new Stage();
-
+        gameService = service.get(GameService.class);
     }
 
     @Override
@@ -24,6 +26,7 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(0.1f, 0.5f, 0.3f, 1f);
         stage.draw();
         stage.act(delta);
+        gameService.update(delta);
     }
 
     @Override
