@@ -35,8 +35,11 @@ public class GameScreen implements Screen {
 
         stage.getBatch().begin();
         for(Card c : gameService.getTable().getHand().getCards()) {
-            stage.getBatch().draw(service.get(RenderService.class).getRegion(c), startX, 150f);
-            startX += 50f;
+            if(c != null) {
+                stage.getBatch().draw(service.get(RenderService.class)
+                    .getRegion(c), startX, 150f);
+                startX += 50f;
+            }
         }
         stage.getBatch().end();
     }

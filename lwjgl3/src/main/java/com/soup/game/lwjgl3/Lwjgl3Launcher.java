@@ -13,7 +13,7 @@ public class Lwjgl3Launcher {
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         Graphics.DisplayMode displayMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
-        config.setTitle("Gambit v0.1");
+        config.setTitle("Gambit v0.2");
         config.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate + 1);
         config.setWindowedMode(displayMode.width, displayMode.height);
         config.setDecorated(false);

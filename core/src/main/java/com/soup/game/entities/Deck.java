@@ -30,13 +30,5 @@ public class Deck implements Entity {
     public void add(Card c) {
         this.cards.put(c.getId(), c);
     }
-    public Card draw() {
-        if(cards.isEmpty()) {
-            return null;
-        }
-
-        Long key = cards.keySet().iterator().next();
-        return cards.remove(key);
-    }
     public void remove(Card c) { this.cards.remove(c.getId()); }
 }

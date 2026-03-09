@@ -4,24 +4,32 @@ import com.soup.game.entities.Card;
 import com.soup.game.entities.Deck;
 import com.soup.game.intf.Service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class DeckService implements Service {
-    private final Deck deck;
+    private final List<Card> cards;
 
     public DeckService(Deck deck) {
-        this.deck = deck;
+        this.cards = new ArrayList<>(deck.getCards().values());
     }
 
     public void shuffle() {
-        if(!this.deck.getCards().isEmpty()) {
-            Collections.shuffle(Arrays.asList(
-                deck.getCards().values().toArray()));
-        }
+        Collections.shuffle(cards);
     }
 
     public Card draw() {
-        return deck.draw();
+        if(cards.isEmpty()) { return null; }
+        return cards.removeFirst();
+    }
+
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
+    public int size() {
+        return cards.size();
     }
 }

@@ -10,9 +10,11 @@ import java.util.List;
 
 public class GameService implements Service {
     private final Table table;
+    private final DeckService deckService;
 
-    public GameService(Table table) {
+    public GameService(Table table, DeckService deckService) {
         this.table = table;
+        this.deckService = deckService;
     }
 
     public Table getTable() {
@@ -30,12 +32,14 @@ public class GameService implements Service {
 
     private void deal() {
         Hand hand = table.getHand();
+        deckService.shuffle();
         if(hand.isComplete()) {
             return;
         }
 
         while(!hand.isComplete()) {
-            Card c = table.getDeck().draw();
+            Card c = deckService.draw();
+            if(c == null) { break; }
             hand.add(c);
         }
         table.setState(GameState.PLAYER_TURN);

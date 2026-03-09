@@ -18,12 +18,13 @@ public class GambitGame extends Game {
         Table table = new Table();
         Stage stage = new Stage();
 
-        String sprites = "cards_4x.png";
+        String sheet = "cards_4x.png";
+        String jokers = "jokers_4x.png";
         String back = "cards_back.png";
 
         service.register(DeckService.class, new DeckService(table.getDeck()));
-        service.register(GameService.class, new GameService(table));
-        service.register(RenderService.class, new RenderService(stage, sprites, back));
+        service.register(GameService.class, new GameService(table, service.get(DeckService.class)));
+        service.register(RenderService.class, new RenderService(stage, sheet, jokers, back, 1));
         setScreen(new GameScreen(service, stage));
     }
 }
