@@ -10,17 +10,23 @@ import com.soup.game.meta.HandType;
 import com.soup.game.scene.Hand;
 import com.soup.game.scene.Table;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("all")
 public class GameService implements Service {
     private final Table table;
-    private final DeckService deckService;
     private final Stage stage;
+    private final DeckService deckService;
+    private final AudioService audioService;
+    private List<Card> lastPlayedCards;
 
-    public GameService(Table table, DeckService deckService, Stage stage) {
+    public GameService(Table table, Stage stage, DeckService deckService,
+                       AudioService audioService) {
         this.table = table;
         this.deckService = deckService;
         this.stage = stage;
+        this.audioService = audioService;
     }
 
     public Table getTable() {
@@ -59,39 +65,57 @@ public class GameService implements Service {
     private void playHand() {
         Hand hand = table.getHand();
         if(hand.isReady()) {
-            for(Card c : List.copyOf(hand.getSelectedCards())) {
-                table.add(c);
-                hand.remove(c);
-            }
+            List<Card> selected = List.copyOf(hand.getSelectedCards());
+            if(selected.isEmpty()) return;
 
-            hand.clearSelection();
-            hand.layout(stage);
-            table.setState(GameState.SCORING);
+            lastPlayedCards = new ArrayList<>(selected);
+            for(Card c : selected) {
+                c.addAction(Actions.sequence(
+                    Actions.moveBy(0, 25f, 0.2f, Interpolation.pow5Out),
+                    Actions.run(() -> audioService.playFX(1)),
+                    Actions.run(() -> {
+                        table.add(c);
+                        hand.remove(c);
+
+                        if(selected.indexOf(c) == selected.size() - 1) {
+                            hand.clearSelection();
+                            hand.layout(stage);
+                            table.setState(GameState.SCORING);
+                        }
+                    })
+                ));
+            }
         }
     }
 
     private void scoreHand() {
         Hand hand = table.getHand();
-        HandType type = hand.evaluate();
-        float points = hand.getValue(type, hand.getCards());
-        table.addScore(points);
-        for(Card c : hand.getSelectedCards()) {
-            c.addAction(Actions.sequence(
-                Actions.moveTo(c.getX(), c.getY() + 25f, 0.2f,
-                    Interpolation.pow5Out),
-                Actions.run(() -> table.setState(GameState.DISCARDING))
-            ));
+        if(lastPlayedCards == null || lastPlayedCards.isEmpty()) {
+            table.setState(GameState.DISCARDING);
+            return;
         }
-        hand.setReady(false);
+
+        HandType type = hand.evaluate(lastPlayedCards);
+        float points = hand.getValue(type, lastPlayedCards);
+        table.addScore(points);
+
+        lastPlayedCards.clear();
+        table.getHand().setReady(false);
     }
 
     private void discardHand() {
         Hand hand = table.getHand();
+        if(hand.getCards().isEmpty()) {
+            table.setState(GameState.DEALING);
+            return;
+        }
+
         for(Card c : List.copyOf(hand.getCards())) {
             table.discard(c);
         }
 
         hand.clear();
+        hand.setReady(false);
         table.setState(GameState.DEALING);
     }
 }

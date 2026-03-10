@@ -5,10 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.soup.game.scene.Table;
 import com.soup.game.screens.GameScreen;
-import com.soup.game.service.DeckService;
-import com.soup.game.service.GameService;
-import com.soup.game.service.RenderService;
-import com.soup.game.service.ServiceFactory;
+import com.soup.game.service.*;
 
 public class GambitGame extends Game {
 
@@ -26,8 +23,10 @@ public class GambitGame extends Game {
         service.register(RenderService.class, new RenderService(sheet, jokers, back, 1));
         Table table = new Table(service.get(RenderService.class));
 
+        service.register(AudioService.class, new AudioService());
         service.register(DeckService.class, new DeckService(table.getDeck()));
-        service.register(GameService.class, new GameService(table, service.get(DeckService.class), stage));
+        service.register(GameService.class, new GameService(table, stage,
+            service.get(DeckService.class), service.get(AudioService.class)));
         setScreen(new GameScreen(service, stage));
     }
 }

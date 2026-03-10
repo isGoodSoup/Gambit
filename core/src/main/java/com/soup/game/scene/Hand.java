@@ -2,6 +2,7 @@ package com.soup.game.scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
 import com.soup.game.meta.HandType;
 import com.soup.game.meta.Rank;
@@ -122,15 +123,17 @@ public class Hand {
         }
     }
 
-    public HandType evaluate() {
-        int size = selected.size();
+    @SuppressWarnings("all")
+    public HandType evaluate(List<Card> activeHand) {
+        activeHand = selected;
+        int size = activeHand.size();
         if(size == 0 || size == 1) {
             return HandType.HIGH_CARD;
         }
 
         if(size < 5) {
             Map<Rank, Integer> rankCounts = new HashMap<>();
-            for(Card c : selected) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+            for(Card c : activeHand) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
 
             int pairs = 0, trips = 0, quads = 0;
             for(int count : rankCounts.values()) {
@@ -147,7 +150,7 @@ public class Hand {
                 : HandType.HIGH_CARD;
         }
 
-        List<Card> sorted = new ArrayList<>(selected);
+        List<Card> sorted = new ArrayList<>(activeHand);
         sorted.sort(Comparator.comparing(Card::getRank));
 
         Map<Rank, Integer> rankCounts = new HashMap<>();
@@ -182,5 +185,15 @@ public class Hand {
             : (counts.stream().filter(c -> c == 2).count() == 2) ? HandType.TWO_PAIR
             : hasPair ? HandType.PAIR
             : HandType.HIGH_CARD;
+    }
+
+    public void discard(Stage stage) {
+        List<Card> toDiscard = new ArrayList<>(selected);
+        for(Card c : toDiscard) {
+            c.clearActions();
+            c.addAction(Actions.moveBy(0f, -100f, 0.2f));
+            remove(c);
+        }
+        layout(stage);
     }
 }
