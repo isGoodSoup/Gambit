@@ -25,7 +25,6 @@ public class Deck implements Entity {
                 add(new Card(suit, rank, rank.getPoints(), false,
                     renderService.getRegion(suit, rank)));
             }
-            add(new Joker(suit, 50f, true, renderService.getRegion(suit)));
         }
     }
 

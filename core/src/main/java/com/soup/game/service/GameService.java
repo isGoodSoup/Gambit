@@ -76,10 +76,13 @@ public class GameService implements Service {
         float points = hand.getValue(type, hand.getCards());
         table.addScore(points);
         for(Card c : hand.getSelectedCards()) {
-            c.addAction(Actions.moveTo(c.getX(), c.getY() + 25f, 0.2f,
-                Interpolation.pow5Out));
+            c.addAction(Actions.sequence(
+                Actions.moveTo(c.getX(), c.getY() + 25f, 0.2f,
+                    Interpolation.pow5Out),
+                Actions.run(() -> table.setState(GameState.DISCARDING))
+            ));
         }
-        table.setState(GameState.DISCARDING);
+        hand.setReady(false);
     }
 
     private void discardHand() {
