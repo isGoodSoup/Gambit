@@ -11,13 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.intf.Entity;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
-import org.w3c.dom.Text;
 
 public class Card extends Actor
     implements Entity {
     private static long NEXT_ID = 1;
     private final long id;
-    private TextureRegion region;
+    private final TextureRegion region;
     private final Suit suit;
     private final Rank rank;
     private final float points;
@@ -73,6 +72,11 @@ public class Card extends Actor
         this.points = points;
         this.isJoker = isJoker;
         this.region = region;
+    }
+
+    @SuppressWarnings("ALL")
+    public Card(Card card) {
+        this(card.suit, card.rank, card.points, card.isJoker, card.region);
     }
 
     @Override

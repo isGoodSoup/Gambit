@@ -1,6 +1,6 @@
 package com.soup.game.service;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.soup.game.entities.Card;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.GameState;
@@ -12,10 +12,12 @@ import java.util.List;
 public class GameService implements Service {
     private final Table table;
     private final DeckService deckService;
+    private final Stage stage;
 
-    public GameService(Table table, DeckService deckService) {
+    public GameService(Table table, DeckService deckService, Stage stage) {
         this.table = table;
         this.deckService = deckService;
+        this.stage = stage;
     }
 
     public Table getTable() {
@@ -33,7 +35,10 @@ public class GameService implements Service {
 
     private void deal() {
         Hand hand = table.getHand();
-        deckService.shuffle();
+        if(table.getState() == GameState.DEALING && hand.size() == 0) {
+            deckService.shuffle();
+        }
+
         if(hand.isComplete()) {
             return;
         }
@@ -43,20 +48,21 @@ public class GameService implements Service {
             if(c == null) { break; }
             hand.add(c);
         }
+
+        hand.layout(stage);
         table.setState(GameState.PLAYER_TURN);
     }
 
     private void playHand() {
         Hand hand = table.getHand();
-        List<Card> selected = hand.getSelectedCards();
-
         if(hand.isReady()) {
-            for(Card c : selected) {
+            for(Card c : List.copyOf(hand.getSelectedCards())) {
                 table.add(c);
                 hand.remove(c);
             }
 
             hand.clearSelection();
+            hand.layout(stage);
             table.setState(GameState.SCORING);
         }
     }
@@ -70,7 +76,7 @@ public class GameService implements Service {
 
     private void discardHand() {
         Hand hand = table.getHand();
-        for(Card c : hand.getCards()) {
+        for(Card c : List.copyOf(hand.getCards())) {
             table.discard(c);
         }
 

@@ -5,17 +5,17 @@ import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 import com.soup.game.service.RenderService;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Deck implements Entity {
-    private final Map<Long, Card> cards;
+    private final List<Card> cards;
 
     public Deck() {
-        this.cards = new LinkedHashMap<>();
+        this.cards = new ArrayList<>();
     }
 
-    public Map<Long, Card> getCards() {
+    public List<Card> getCards() {
         return cards;
     }
 
@@ -30,14 +30,7 @@ public class Deck implements Entity {
     }
 
     public void add(Card c) {
-        this.cards.put(c.getId(), c);
+        this.cards.add(c);
     }
-    public void remove(Card c) { this.cards.remove(c.getId()); }
-
-    public Card draw() {
-        if(cards.isEmpty()) { return null; }
-        Card first = cards.values().iterator().next();
-        remove(first);
-        return first;
-    }
+    public void remove(Card c) { this.cards.remove(c); }
 }

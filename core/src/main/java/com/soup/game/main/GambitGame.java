@@ -11,12 +11,14 @@ import com.soup.game.service.RenderService;
 import com.soup.game.service.ServiceFactory;
 
 public class GambitGame extends Game {
-    private ServiceFactory service;
 
     @Override
     public void create() {
-        service = new ServiceFactory();
+        ServiceFactory service = new ServiceFactory();
         Stage stage = new Stage(new ScreenViewport());
+        stage.setDebugAll(false);
+        stage.getRoot().setTransform(false);
+
         String sheet = "cards_4x.png";
         String jokers = "jokers_4x.png";
         String back = "cards_back.png";
@@ -25,7 +27,7 @@ public class GambitGame extends Game {
         Table table = new Table(service.get(RenderService.class));
 
         service.register(DeckService.class, new DeckService(table.getDeck()));
-        service.register(GameService.class, new GameService(table, service.get(DeckService.class)));
+        service.register(GameService.class, new GameService(table, service.get(DeckService.class), stage));
         setScreen(new GameScreen(service, stage));
     }
 }
