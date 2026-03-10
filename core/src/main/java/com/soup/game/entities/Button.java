@@ -13,14 +13,16 @@ import com.soup.game.intf.Entity;
 public class Button extends Actor
     implements Entity {
     private static final Texture button = new Texture("ui/button.png");
+    private static final Texture buttonAlt = new Texture("ui/button_alt.png");
     private static final Texture frame = new Texture("ui/button_on.png");
     private final NinePatch patch;
     private final NinePatch patchFrame;
     private final Runnable action;
     private boolean isHovered;
 
-    public Button(float x, float y, float width, float height, Runnable action) {
-        this.patch = new NinePatch(button, 16, 16, 16, 16);
+    public Button(boolean isAlt, float x, float y, float width, float height,
+                  Runnable action) {
+        this.patch = new NinePatch(isAlt ? buttonAlt : button, 16, 16, 16, 16);
         this.patchFrame = new NinePatch(frame, 16, 16, 16, 16);
         this.action = action;
         setSize(width, height);

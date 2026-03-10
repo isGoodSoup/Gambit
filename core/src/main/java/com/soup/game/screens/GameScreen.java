@@ -2,6 +2,8 @@ package com.soup.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,10 +15,18 @@ import com.soup.game.scene.Hand;
 import com.soup.game.service.AudioService;
 import com.soup.game.service.GameService;
 import com.soup.game.service.ServiceFactory;
+import com.soup.game.service.UIAssets;
 
+@SuppressWarnings("all")
 public class GameScreen implements Screen {
     private final ServiceFactory service;
     private final Stage stage;
+    private final float buttonX = 150f;
+    private final float buttonY = Gdx.graphics.getHeight()/2f - 100f;
+    private final float buttonWidth = 60f;
+    private final float buttonHeight = 60f;
+    private final float spacing = buttonWidth/4f;
+
     private GameService gameService;
 
     public GameScreen(ServiceFactory service, Stage stage) {
@@ -42,8 +52,11 @@ public class GameScreen implements Screen {
         Hand hand = gameService.getTable().getHand();
         Gdx.input.setInputProcessor(stage);
         hand.layout(stage);
-        stage.addActor(new Button(150f, 150f, 80f, 80f, () -> hand.setReady(true)));
-        stage.addActor(new Button(150f, 240f, 80f, 80f, () -> gameService.discardHand()));
+
+        stage.addActor(new Button(false, buttonX, buttonY,
+            buttonWidth, buttonHeight, () -> hand.setReady(true)));
+        stage.addActor(new Button(true, buttonX + buttonWidth + spacing,
+            buttonY, buttonWidth, buttonHeight, () -> gameService.discardHand()));
     }
 
     @Override
@@ -52,6 +65,16 @@ public class GameScreen implements Screen {
         gameService.update(delta);
         stage.act(delta);
         stage.draw();
+
+        BitmapFont font = service.get(UIAssets.class).getFont();
+        String score = String.valueOf((int) gameService.getTable().getScore());
+        GlyphLayout layout = new GlyphLayout(font, score);
+        stage.getBatch().begin();
+        float centerX = buttonX + (buttonWidth * 2 + spacing)/2f;
+        float textX = centerX - layout.width/2f;
+        float textY = Gdx.graphics.getHeight()/2f + 25f;
+        font.draw(stage.getBatch(), layout, textX, textY);
+        stage.getBatch().end();
     }
 
     @Override public void resize(int width, int height) {}

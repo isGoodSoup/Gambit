@@ -44,24 +44,18 @@ public class GameService implements Service {
 
     private void deal() {
         Hand hand = table.getHand();
-        if(hand.isEmpty()) {
-            if(table.getState() == GameState.DEALING && hand.size() == 0) {
-                deckService.shuffle();
-            }
-
-            if(hand.isComplete()) {
-                return;
-            }
-
-            while(!hand.isComplete()) {
-                Card c = deckService.draw();
-                if(c == null) { break; }
-                hand.add(c);
-            }
-
-            hand.layout(stage);
-            table.setState(GameState.PLAYER_TURN);
+        if(hand.size() == 0) {
+            deckService.shuffle();
         }
+
+        while(hand.size() < hand.getMaxSize()) {
+            Card c = deckService.draw();
+            if(c == null) break;
+            hand.add(c);
+        }
+
+        hand.layout(stage);
+        table.setState(GameState.PLAYER_TURN);
     }
 
     private void playHand() {
@@ -95,16 +89,25 @@ public class GameService implements Service {
     private void scoreHand() {
         Hand hand = table.getHand();
         if(lastPlayedCards == null || lastPlayedCards.isEmpty()) {
-            table.setState(GameState.DISCARDING);
+            table.setState(GameState.PLAYER_TURN);
             return;
         }
 
         HandType type = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(type, lastPlayedCards);
-        table.addScore(points);
+        float chips = table.multiply(points);
+        table.addScore(chips);
 
+        while(hand.size() < hand.getMaxSize()) {
+            Card c = deckService.draw();
+            if(c == null) break;
+            hand.add(c);
+        }
+
+        hand.layout(stage);
         lastPlayedCards.clear();
-        table.getHand().setReady(false);
+        hand.setReady(false);
+        table.setState(GameState.PLAYER_TURN);
     }
 
     public void discardHand() {

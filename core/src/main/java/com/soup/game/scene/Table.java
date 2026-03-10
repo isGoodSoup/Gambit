@@ -64,7 +64,7 @@ public class Table {
         this.chips = 0;
     }
 
-    public void multiply(float i) {
-        this.multiplier += i;
+    public float multiply(float i) {
+        return this.multiplier += i;
     }
 }

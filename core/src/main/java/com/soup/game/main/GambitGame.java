@@ -27,6 +27,7 @@ public class GambitGame extends Game {
         service.register(DeckService.class, new DeckService(table.getDeck()));
         service.register(GameService.class, new GameService(table, stage,
             service.get(DeckService.class), service.get(AudioService.class)));
+        service.register(UIAssets.class, new UIAssets());
         setScreen(new GameScreen(service, stage));
     }
 }
