@@ -43,7 +43,7 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         hand.layout(stage);
         stage.addActor(new Button(150f, 150f, 80f, 80f, () -> hand.setReady(true)));
-        stage.addActor(new Button(150f, 350f, 80f, 80f, () -> hand.discard(stage)));
+        stage.addActor(new Button(150f, 240f, 80f, 80f, () -> gameService.discardHand()));
     }
 
     @Override

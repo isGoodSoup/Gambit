@@ -41,11 +41,14 @@ public class Card extends Actor implements Entity {
 
         addListener(new InputListener() {
             float offsetX, offsetY;
+            float originalX, originalY;
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 toFront();
                 offsetX = x; offsetY = y;
+                originalX = getX();
+                originalY = getY();
                 return true;
             }
 
@@ -59,6 +62,17 @@ public class Card extends Actor implements Entity {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 isDragging = false;
+                setSize(width, height);
+                setPosition(originalX, originalY);
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                setSize(width + 25f, height + 25f);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 setSize(width, height);
             }
         });
