@@ -22,6 +22,7 @@ public class Card extends Actor implements Entity {
     private final float moveAmount = 30f;
     private final float duration = 0.15f;
     private float width, height;
+    private float baseY;
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
@@ -37,6 +38,12 @@ public class Card extends Actor implements Entity {
         this.height = region.getRegionHeight()/2f;
 
         setSize(width, height);
+        addAction(Actions.forever(
+            Actions.sequence(
+                Actions.moveBy(0, 8, 1f, Interpolation.sine),
+                Actions.moveBy(0, -8, 1f, Interpolation.sine)
+            ))
+        );
         setTouchable(Touchable.enabled);
 
         addListener(new InputListener() {
@@ -50,13 +57,6 @@ public class Card extends Actor implements Entity {
                 originalX = getX();
                 originalY = getY();
                 return true;
-            }
-
-            @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                isDragging = true;
-                moveBy(x - offsetX, y - offsetY);
-                setSize(width + 25f, height + 25f);
             }
 
             @Override
@@ -87,7 +87,7 @@ public class Card extends Actor implements Entity {
         this.region = region;
     }
 
-    @SuppressWarnings("ALL")
+    @SuppressWarnings("all")
     public Card(Card card) {
         this(card.suit, card.rank, card.points, card.isJoker, card.region);
     }
@@ -103,7 +103,6 @@ public class Card extends Actor implements Entity {
         }
 
         isSelected = true;
-        clearActions();
         addAction(Actions.moveBy(0, moveAmount,
             duration, Interpolation.sineOut));
     }
@@ -113,7 +112,6 @@ public class Card extends Actor implements Entity {
             return;
         }
         isSelected = false;
-        clearActions();
         addAction(Actions.moveBy(0, -moveAmount,
             duration, Interpolation.sineIn));
     }
