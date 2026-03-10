@@ -1,7 +1,7 @@
 package com.soup.game.meta;
 
 public enum Rank {
-    ACE(11f),
+    ACE(15f),
     TWO(2f),
     THREE(3f),
     FOUR(4f),

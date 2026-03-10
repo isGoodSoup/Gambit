@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.soup.game.entities.Button;
 import com.soup.game.entities.Card;
 import com.soup.game.scene.Hand;
 import com.soup.game.service.GameService;
@@ -39,6 +40,8 @@ public class GameScreen implements Screen {
         Hand hand = gameService.getTable().getHand();
         Gdx.input.setInputProcessor(stage);
         hand.layout(stage);
+        stage.addActor(new Button(150f, 150f,
+            150f, 75f, () -> hand.setReady(true)));
     }
 
     @Override

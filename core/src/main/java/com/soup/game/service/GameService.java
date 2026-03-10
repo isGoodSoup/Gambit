@@ -1,9 +1,12 @@
 package com.soup.game.service;
 
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.GameState;
+import com.soup.game.meta.HandType;
 import com.soup.game.scene.Hand;
 import com.soup.game.scene.Table;
 
@@ -69,8 +72,13 @@ public class GameService implements Service {
 
     private void scoreHand() {
         Hand hand = table.getHand();
-        float points = hand.getValue(hand.getHand(), hand.getCards());
+        HandType type = hand.evaluate();
+        float points = hand.getValue(type, hand.getCards());
         table.addScore(points);
+        for(Card c : hand.getSelectedCards()) {
+            c.addAction(Actions.moveTo(c.getX(), c.getY() + 25f, 0.2f,
+                Interpolation.pow5Out));
+        }
         table.setState(GameState.DISCARDING);
     }
 

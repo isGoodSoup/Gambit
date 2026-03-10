@@ -4,16 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.soup.game.entities.Card;
 import com.soup.game.meta.HandType;
+import com.soup.game.meta.Rank;
+import com.soup.game.meta.Suit;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Hand {
     private static final int MAX_SIZE = 8;
     private static final int MAX_SELECT = 5;
     private final List<Card> cards;
     private final List<Card> selected;
-    private HandType hand;
     private boolean isReady;
 
     public Hand() {
@@ -70,9 +70,6 @@ public class Hand {
         return this.cards.size() >= MAX_SIZE;
     }
 
-    public HandType getHand() {
-        return hand;
-    }
     public float getValue(HandType hand, List<Card> c) {
         return hand.calc(c);
     }
@@ -123,5 +120,67 @@ public class Hand {
                 stage.addActor(c);
             }
         }
+    }
+
+    public HandType evaluate() {
+        int size = selected.size();
+        if(size == 0 || size == 1) {
+            return HandType.HIGH_CARD;
+        }
+
+        if(size < 5) {
+            Map<Rank, Integer> rankCounts = new HashMap<>();
+            for(Card c : selected) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+
+            int pairs = 0, trips = 0, quads = 0;
+            for(int count : rankCounts.values()) {
+                pairs += (count == 2 ? 1 : 0);
+                trips += (count == 3 ? 1 : 0);
+                quads += (count == 4 ? 1 : 0);
+            }
+
+            return quads > 0 ? HandType.QUADS
+                : (trips > 0 && pairs > 0) ? HandType.FULL_HOUSE
+                : (trips > 0) ? HandType.TRIPS
+                : (pairs > 1) ? HandType.TWO_PAIR
+                : (pairs == 1) ? HandType.PAIR
+                : HandType.HIGH_CARD;
+        }
+
+        List<Card> sorted = new ArrayList<>(selected);
+        sorted.sort(Comparator.comparing(Card::getRank));
+
+        Map<Rank, Integer> rankCounts = new HashMap<>();
+        for(Card c : sorted) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+
+        Collection<Integer> counts = rankCounts.values();
+        boolean hasPair = counts.contains(2);
+        boolean hasTrips = counts.contains(3);
+        boolean hasQuads = counts.contains(4);
+
+        Suit firstSuit = sorted.getFirst().getSuit();
+        boolean isFlush = sorted.stream().allMatch(c -> c.getSuit() == firstSuit);
+
+        boolean isStraight = true;
+        for(int i = 0; i < sorted.size() - 1; i++)
+            if(sorted.get(i + 1).getRank().ordinal() != sorted.get(i).getRank().ordinal() + 1) { isStraight = false; break; }
+
+        boolean isRoyal = sorted.get(0).getRank() == Rank.TEN
+            && sorted.get(1).getRank() == Rank.JACK
+            && sorted.get(2).getRank() == Rank.QUEEN
+            && sorted.get(3).getRank() == Rank.KING
+            && sorted.get(4).getRank() == Rank.ACE
+            && isFlush;
+
+        return (isStraight && isRoyal) ? HandType.ROYAL_FLUSH
+            : (isStraight && isFlush) ? HandType.STRAIGHT_FLUSH
+            : hasQuads ? HandType.QUADS
+            : (hasTrips && hasPair) ? HandType.FULL_HOUSE
+            : isFlush ? HandType.FLUSH
+            : isStraight ? HandType.STRAIGHT
+            : hasTrips ? HandType.TRIPS
+            : (counts.stream().filter(c -> c == 2).count() == 2) ? HandType.TWO_PAIR
+            : hasPair ? HandType.PAIR
+            : HandType.HIGH_CARD;
     }
 }
