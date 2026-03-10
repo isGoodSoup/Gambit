@@ -12,10 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Button;
 import com.soup.game.entities.Card;
 import com.soup.game.scene.Hand;
-import com.soup.game.service.AudioService;
-import com.soup.game.service.GameService;
-import com.soup.game.service.ServiceFactory;
-import com.soup.game.service.UIAssets;
+import com.soup.game.service.*;
 
 @SuppressWarnings("all")
 public class GameScreen implements Screen {
@@ -69,11 +66,13 @@ public class GameScreen implements Screen {
         BitmapFont font = service.get(UIAssets.class).getFont();
         String score = String.valueOf((int) gameService.getTable().getScore());
         GlyphLayout layout = new GlyphLayout(font, score);
+
         stage.getBatch().begin();
         float centerX = buttonX + (buttonWidth * 2 + spacing)/2f;
         float textX = centerX - layout.width/2f;
         float textY = Gdx.graphics.getHeight()/2f + 25f;
         font.draw(stage.getBatch(), layout, textX, textY);
+        service.get(RenderService.class).drawBack(stage);
         stage.getBatch().end();
     }
 

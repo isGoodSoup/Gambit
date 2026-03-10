@@ -1,7 +1,10 @@
 package com.soup.game.service;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
@@ -58,5 +61,11 @@ public class RenderService implements Service {
         sheet.dispose();
         jokers.dispose();
         backCard.getTexture().dispose();
+    }
+
+    public void drawBack(Stage stage) {
+        stage.getBatch().draw(backCard,
+            Gdx.graphics.getWidth() - backCard.getRegionWidth(), 150f,
+            backCard.getRegionWidth()/2f, backCard.getRegionHeight()/2f);
     }
 }
