@@ -2,7 +2,6 @@ package com.soup.game.scene;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
 import com.soup.game.meta.HandType;
 import com.soup.game.meta.Rank;
@@ -31,6 +30,7 @@ public class Hand {
     }
 
     public void select(Card c) {
+        selected.removeIf(card -> !cards.contains(card));
         if(selected.contains(c)) {
             c.deselect();
             selected.remove(c);
@@ -88,6 +88,10 @@ public class Hand {
         this.isReady = ready;
     }
 
+    public boolean isEmpty() {
+        return cards.isEmpty();
+    }
+
     public void layout(Stage stage) {
         for(Card c : cards) {
             if(c.getStage() != null) {
@@ -125,7 +129,6 @@ public class Hand {
 
     @SuppressWarnings("all")
     public HandType evaluate(List<Card> activeHand) {
-        activeHand = selected;
         int size = activeHand.size();
         if(size == 0 || size == 1) {
             return HandType.HIGH_CARD;
@@ -185,15 +188,5 @@ public class Hand {
             : (counts.stream().filter(c -> c == 2).count() == 2) ? HandType.TWO_PAIR
             : hasPair ? HandType.PAIR
             : HandType.HIGH_CARD;
-    }
-
-    public void discard(Stage stage) {
-        List<Card> toDiscard = new ArrayList<>(selected);
-        for(Card c : toDiscard) {
-            c.clearActions();
-            c.addAction(Actions.moveBy(0f, -100f, 0.2f));
-            remove(c);
-        }
-        layout(stage);
     }
 }

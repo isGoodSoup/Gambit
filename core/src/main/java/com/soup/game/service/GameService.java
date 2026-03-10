@@ -44,22 +44,24 @@ public class GameService implements Service {
 
     private void deal() {
         Hand hand = table.getHand();
-        if(table.getState() == GameState.DEALING && hand.size() == 0) {
-            deckService.shuffle();
-        }
+        if(hand.isEmpty()) {
+            if(table.getState() == GameState.DEALING && hand.size() == 0) {
+                deckService.shuffle();
+            }
 
-        if(hand.isComplete()) {
-            return;
-        }
+            if(hand.isComplete()) {
+                return;
+            }
 
-        while(!hand.isComplete()) {
-            Card c = deckService.draw();
-            if(c == null) { break; }
-            hand.add(c);
-        }
+            while(!hand.isComplete()) {
+                Card c = deckService.draw();
+                if(c == null) { break; }
+                hand.add(c);
+            }
 
-        hand.layout(stage);
-        table.setState(GameState.PLAYER_TURN);
+            hand.layout(stage);
+            table.setState(GameState.PLAYER_TURN);
+        }
     }
 
     private void playHand() {
@@ -67,21 +69,23 @@ public class GameService implements Service {
         if(hand.isReady()) {
             List<Card> selected = List.copyOf(hand.getSelectedCards());
             if(selected.isEmpty()) return;
-
             lastPlayedCards = new ArrayList<>(selected);
-            for(Card c : selected) {
+            for(int i = 0; i < selected.size(); i++) {
+                Card c = selected.get(i);
+                boolean last = (i == selected.size() - 1);
                 c.addAction(Actions.sequence(
-                    Actions.moveBy(0, 25f, 0.2f, Interpolation.pow5Out),
+                    Actions.moveBy(0, 25f, 0.2f,
+                        Interpolation.pow5Out),
                     Actions.run(() -> audioService.playFX(1)),
                     Actions.run(() -> {
                         table.add(c);
                         hand.remove(c);
-
-                        if(selected.indexOf(c) == selected.size() - 1) {
+                        if(last) {
                             hand.clearSelection();
                             hand.layout(stage);
                             table.setState(GameState.SCORING);
                         }
+
                     })
                 ));
             }
@@ -103,19 +107,29 @@ public class GameService implements Service {
         table.getHand().setReady(false);
     }
 
-    private void discardHand() {
+    public void discardHand() {
         Hand hand = table.getHand();
-        if(hand.getCards().isEmpty()) {
-            table.setState(GameState.DEALING);
+        List<Card> toDiscard = new ArrayList<>(hand.getSelectedCards());
+
+        if(toDiscard.isEmpty()) {
+            table.setState(GameState.PLAYER_TURN);
             return;
         }
 
-        for(Card c : List.copyOf(hand.getCards())) {
+        for(Card c : toDiscard) {
             table.discard(c);
+            hand.remove(c);
+
+            Card newCard = deckService.draw();
+            if(newCard != null) {
+                hand.add(newCard);
+            }
         }
 
-        hand.clear();
+        hand.clearSelection();
+        hand.layout(stage);
         hand.setReady(false);
-        table.setState(GameState.DEALING);
+
+        table.setState(GameState.PLAYER_TURN);
     }
 }
