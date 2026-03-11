@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Logo;
 import com.soup.game.service.ServiceFactory;
@@ -17,6 +16,7 @@ public class OpenScreen implements Screen {
     private final Game game;
     private final Stage stage;
     private final ServiceFactory service;
+    private Logo logo;
 
     public OpenScreen(Game game, Stage stage, ServiceFactory service) {
         this.game = game;
@@ -26,7 +26,7 @@ public class OpenScreen implements Screen {
 
     @Override
     public void show() {
-        Logo logo = new Logo();
+        logo = new Logo();
         stage.addActor(logo);
     }
 
@@ -37,12 +37,9 @@ public class OpenScreen implements Screen {
         stage.draw();
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            stage.addAction(Actions.sequence(
+            logo.addAction(Actions.sequence(
                 Actions.moveBy(0f, Gdx.graphics.getHeight(), 0.5f, Interpolation.sine),
-                Actions.delay(0.4f),
-                Actions.run(() -> {
-                    game.setScreen(new GameScreen(service, stage));
-                })
+                Actions.run(() -> game.setScreen(new GameScreen(service, stage)))
             ));
         }
     }
