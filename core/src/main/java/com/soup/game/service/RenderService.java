@@ -1,31 +1,26 @@
 package com.soup.game.service;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.soup.game.intf.Service;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
+@SuppressWarnings("all")
 public class RenderService implements Service {
     private final Texture sheet;
     private final Texture jokers;
     private final TextureRegion[][] cardRegions;
     private final TextureRegion[][] jokerRegions;
-    private final TextureRegion backCard;
 
     private final int cols = 13;
     private final int rows = 4;
     private final int jokerCols;
     private final int jokerRows;
 
-    public RenderService(String spritesheetPath, String jokersPath,
-                         String backPath, int jokerCols) {
+    public RenderService(String spritesheetPath, String jokersPath, int jokerCols) {
         this.sheet = new Texture(spritesheetPath);
         this.jokers = new Texture(jokersPath);
-        this.backCard = new TextureRegion(new Texture(backPath));
 
         int cardWidth = sheet.getWidth()/cols;
         int cardHeight = sheet.getHeight()/rows;
@@ -60,12 +55,5 @@ public class RenderService implements Service {
     public void dispose() {
         sheet.dispose();
         jokers.dispose();
-        backCard.getTexture().dispose();
-    }
-
-    public void drawBack(Stage stage) {
-        stage.getBatch().draw(backCard,
-            Gdx.graphics.getWidth() - backCard.getRegionWidth(), 150f,
-            backCard.getRegionWidth()/2f, backCard.getRegionHeight()/2f);
     }
 }

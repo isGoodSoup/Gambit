@@ -18,9 +18,8 @@ public class GambitGame extends Game {
 
         String sheet = "sprites/cards_4x.png";
         String jokers = "sprites/jokers_4x.png";
-        String back = "sprites/cards_back.png";
 
-        service.register(RenderService.class, new RenderService(sheet, jokers, back, 1));
+        service.register(RenderService.class, new RenderService(sheet, jokers, 1));
         Table table = new Table(service.get(RenderService.class));
 
         service.register(AudioService.class, new AudioService());
