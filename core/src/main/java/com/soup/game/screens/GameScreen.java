@@ -58,7 +58,7 @@ public class GameScreen implements Screen {
         float mainX = Gdx.graphics.getWidth()/2f - mainWidth/2f;
         float mainY = hand.getCardsY() - 50f;
         group.addActor(new Window(mainX, mainY, mainWidth, mainHeight));
-        hand.layout(stage);
+        hand.layout(stage, false);
 
         for(Card c : hand.getCards()) {
             group.addActor(c);

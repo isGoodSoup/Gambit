@@ -54,7 +54,7 @@ public class GameService implements Service {
             hand.add(c);
         }
 
-        hand.layout(stage);
+        hand.layout(stage, true);
         table.setState(GameState.PLAYER_TURN);
     }
 
@@ -67,19 +67,27 @@ public class GameService implements Service {
             for(int i = 0; i < selected.size(); i++) {
                 Card c = selected.get(i);
                 boolean last = (i == selected.size() - 1);
+                float duration = 0.4f;
+                c.setAnimating(true);
                 c.addAction(Actions.sequence(
-                    Actions.moveBy(0, 25f, 0.2f,
-                        Interpolation.pow5Out),
-                    Actions.run(() -> audioService.playFX(1)),
+                    Actions.moveBy(0f, 150f, duration, Interpolation.sine),
+                    Actions.delay(duration),
+                    Actions.run(() -> {
+                        c.setAnimating(false);
+                        audioService.playFX(1);
+                    }),
                     Actions.run(() -> {
                         table.add(c);
                         hand.remove(c);
                         if(last) {
                             hand.clearSelection();
-                            hand.layout(stage);
-                            table.setState(GameState.SCORING);
+                            hand.layout(stage, true);
+                            stage.addAction(Actions.sequence(
+                                Actions.run(() -> {
+                                    table.setState(GameState.SCORING);
+                                })
+                            ));
                         }
-
                     })
                 ));
             }
@@ -100,11 +108,10 @@ public class GameService implements Service {
 
         while(hand.size() < hand.getMaxSize()) {
             Card c = deckService.draw();
-            if(c == null) break;
             hand.add(c);
         }
 
-        hand.layout(stage);
+        hand.layout(stage, true);
         lastPlayedCards.clear();
         hand.setReady(false);
         table.setState(GameState.PLAYER_TURN);
@@ -130,7 +137,7 @@ public class GameService implements Service {
         }
 
         hand.clearSelection();
-        hand.layout(stage);
+        hand.layout(stage, true);
         hand.setReady(false);
 
         table.setState(GameState.PLAYER_TURN);

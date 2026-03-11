@@ -23,6 +23,7 @@ public class Card extends Actor implements Entity {
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
+    private boolean isAnimating;
 
     public Card(Suit suit, Rank rank, float points, boolean isJoker,
                 TextureRegion region) {
@@ -95,7 +96,7 @@ public class Card extends Actor implements Entity {
     @Override
     public void act(float delta) {
         super.act(delta);
-        if (!isDragging) {
+        if (!isDragging && !isAnimating) {
             float offset = (float) Math.sin(globalTime * Math.PI) * floatAmplitude;
             setY(baseY + offset + (isSelected ? moveAmount : 0));
         }
@@ -131,6 +132,12 @@ public class Card extends Actor implements Entity {
     }
     public boolean isSelected() {
         return isSelected;
+    }
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
     }
     public float getCardWidth() {
         return width;

@@ -41,11 +41,14 @@ public class Score extends Actor
     public void draw(Batch batch, float parentAlpha) {
         BitmapFont font = service.get(UIAssets.class).getFont();
         String score = String.valueOf(lastScore);
+
+        float scale = getScaleX();
+        font.getData().setScale(scale);
+
         layout.setText(font, score);
         float textX = getX() - layout.width/2f;
         float textY = getY();
-        float scale = getScaleX();
-        font.getData().setScale(scale);
+
         font.draw(batch, layout, textX, textY);
         font.getData().setScale(1f);
     }

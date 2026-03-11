@@ -1,7 +1,9 @@
 package com.soup.game.scene;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
 import com.soup.game.meta.HandType;
 import com.soup.game.meta.Rank;
@@ -96,7 +98,7 @@ public class Hand {
         return cards.getFirst().getBaseY();
     }
 
-    public void layout(Stage stage) {
+    public void layout(Stage stage, boolean canAnimate) {
         for(Card c : cards) {
             if(c.getStage() != null) {
                 c.remove();
@@ -122,11 +124,24 @@ public class Hand {
         }
 
         float startX = (Gdx.graphics.getWidth() - totalWidth) / 2f;
+
         for(int i = 0; i < numCards; i++) {
             Card c = cards.get(i);
-            c.setPosition(startX + i * spacing, handY);
+            float targetX = startX + i * spacing;
+            float targetY = handY;
+
             if(c.getStage() == null) {
                 stage.addActor(c);
+                if(canAnimate) {
+                    c.setPosition(targetX, targetY + 200); // start above hand
+                    c.addAction(Actions.moveTo(targetX, targetY, 0.5f, Interpolation.sineOut));
+                } else {
+                    c.setPosition(targetX, targetY);
+                }
+            } else if(canAnimate && !c.isAnimating()) {
+                c.addAction(Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut));
+            } else {
+                c.setPosition(targetX, targetY);
             }
         }
     }
