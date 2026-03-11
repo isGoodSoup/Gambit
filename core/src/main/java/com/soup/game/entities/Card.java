@@ -26,7 +26,8 @@ public class Card extends Actor implements Entity {
     private boolean isSelected;
     private Action animation;
 
-    public Card(Suit suit, Rank rank, float points, boolean isJoker, TextureRegion region) {
+    public Card(Suit suit, Rank rank, float points, boolean isJoker,
+                TextureRegion region) {
         this.id = NEXT_ID++;
         this.suit = suit;
         this.rank = rank;

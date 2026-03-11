@@ -50,10 +50,9 @@ public class GameScreen implements Screen {
         Hand hand = gameService.getTable().getHand();
         Gdx.input.setInputProcessor(stage);
 
-        float width = Gdx.graphics.getWidth()/3f;
-        float height = width * 2f;
-        stage.addActor(new Window(Gdx.graphics.getWidth()/2f - width/2f, 150f, width, height));
-
+        float width = 800f;
+        float height = 200f;
+        stage.addActor(new Window(Gdx.graphics.getWidth()/2f - width/2f, 100f, width, height));
         hand.layout(stage);
 
         stage.addActor(new Button(false, buttonX, buttonY,
