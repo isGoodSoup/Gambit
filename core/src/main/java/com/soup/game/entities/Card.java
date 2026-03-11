@@ -2,30 +2,29 @@ package com.soup.game.entities;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.soup.game.intf.Entity;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
+@SuppressWarnings("all")
 public class Card extends Actor implements Entity {
     private static long NEXT_ID = 1;
     private final long id;
     private final TextureRegion region;
     private final Suit suit;
     private final Rank rank;
+    private static float globalTime = 0f;
     private final float points;
     private final float moveAmount = 30f;
-    private final float duration = 0.15f;
+    private final float floatAmplitude = 4f;
+    private final float cardBaseY = 150f;
     private float width, height;
     private float baseY;
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
+    private Action animation;
 
     public Card(Suit suit, Rank rank, float points, boolean isJoker, TextureRegion region) {
         this.id = NEXT_ID++;
@@ -38,12 +37,8 @@ public class Card extends Actor implements Entity {
         this.height = region.getRegionHeight()/2f;
 
         setSize(width, height);
-        addAction(Actions.forever(
-            Actions.sequence(
-                Actions.moveBy(0, 8, 1f, Interpolation.sine),
-                Actions.moveBy(0, -8, 1f, Interpolation.sine)
-            ))
-        );
+        setPosition(getX(), cardBaseY);
+        baseY = getY();
         setTouchable(Touchable.enabled);
 
         addListener(new InputListener() {
@@ -56,7 +51,14 @@ public class Card extends Actor implements Entity {
                 offsetX = x; offsetY = y;
                 originalX = getX();
                 originalY = getY();
+                isDragging = true;
+                removeAction(animation);
                 return true;
+            }
+
+            @Override
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                setPosition(event.getStageX() - offsetX, event.getStageY() - offsetY);
             }
 
             @Override
@@ -93,27 +95,23 @@ public class Card extends Actor implements Entity {
     }
 
     @Override
+    public void act(float delta) {
+        super.act(delta);
+        if (!isDragging) {
+            float offset = (float) Math.sin(globalTime * Math.PI) * floatAmplitude;
+            setY(baseY + offset + (isSelected ? moveAmount : 0));
+        }
+    }
+
+    @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.draw(region, getX(), getY(), getWidth(), getHeight());
     }
 
-    public void select() {
-        if(isDragging || isSelected) {
-            return;
-        }
-
-        isSelected = true;
-        addAction(Actions.moveBy(0, moveAmount,
-            duration, Interpolation.sineOut));
-    }
-
-    public void deselect() {
-        if(!isSelected) {
-            return;
-        }
-        isSelected = false;
-        addAction(Actions.moveBy(0, -moveAmount,
-            duration, Interpolation.sineIn));
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        if(!isDragging) { baseY = y; }
     }
 
     public long getId() {
@@ -142,5 +140,24 @@ public class Card extends Actor implements Entity {
     }
     public float getCardHeight() {
         return height;
+    }
+
+    public void select() {
+        if(isDragging || isSelected) {
+            return;
+        }
+        isSelected = true;
+    }
+
+    public void deselect() {
+        if(!isSelected) {
+            return;
+        }
+        isSelected = false;
+        baseY = cardBaseY;
+    }
+
+    public static void updateGlobalTime(float delta) {
+        globalTime += delta;
     }
 }

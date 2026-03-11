@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Button;
 import com.soup.game.entities.Card;
+import com.soup.game.entities.Window;
 import com.soup.game.scene.Hand;
 import com.soup.game.service.*;
 
@@ -48,6 +49,11 @@ public class GameScreen implements Screen {
         gameService.update(0f);
         Hand hand = gameService.getTable().getHand();
         Gdx.input.setInputProcessor(stage);
+
+        float width = Gdx.graphics.getWidth()/3f;
+        float height = width * 2f;
+        stage.addActor(new Window(Gdx.graphics.getWidth()/2f - width/2f, 150f, width, height));
+
         hand.layout(stage);
 
         stage.addActor(new Button(false, buttonX, buttonY,
@@ -60,9 +66,23 @@ public class GameScreen implements Screen {
     public void render(float delta) {
         ScreenUtils.clear(0.1f, 0.5f, 0.3f, 1f);
         gameService.update(delta);
-        stage.act(delta);
+        Card.updateGlobalTime(Gdx.graphics.getDeltaTime());
+        stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();
+        updateScore();
+    }
 
+    @Override public void resize(int width, int height) {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+    }
+
+    public void updateScore() {
         BitmapFont font = service.get(UIAssets.class).getFont();
         String score = String.valueOf((int) gameService.getTable().getScore());
         GlyphLayout layout = new GlyphLayout(font, score);
@@ -74,15 +94,5 @@ public class GameScreen implements Screen {
         font.draw(stage.getBatch(), layout, textX, textY);
         service.get(RenderService.class).drawBack(stage);
         stage.getBatch().end();
-    }
-
-    @Override public void resize(int width, int height) {}
-    @Override public void pause() {}
-    @Override public void resume() {}
-    @Override public void hide() {}
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }
