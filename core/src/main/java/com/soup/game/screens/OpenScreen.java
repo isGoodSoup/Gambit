@@ -6,10 +6,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Logo;
+import com.soup.game.entities.FloatingText;
+import com.soup.game.service.Localization;
 import com.soup.game.service.ServiceFactory;
 
 public class OpenScreen implements Screen {
@@ -17,6 +20,8 @@ public class OpenScreen implements Screen {
     private final Stage stage;
     private final ServiceFactory service;
     private Logo logo;
+    private FloatingText text;
+    private Group group;
 
     public OpenScreen(Game game, Stage stage, ServiceFactory service) {
         this.game = game;
@@ -26,8 +31,16 @@ public class OpenScreen implements Screen {
 
     @Override
     public void show() {
-        logo = new Logo();
-        stage.addActor(logo);
+        this.group = new Group();
+        String start = Localization.lang.t("menu.start");
+        this.logo = new Logo();
+        this.text = new FloatingText(service, start);
+
+        text.setPosition(Gdx.graphics.getWidth()/2f - text.getWidth()/2f, 150f);
+
+        group.addActor(logo);
+        group.addActor(text);
+        stage.addActor(group);
     }
 
     @Override
@@ -37,8 +50,9 @@ public class OpenScreen implements Screen {
         stage.draw();
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            logo.addAction(Actions.sequence(
+            group.addAction(Actions.sequence(
                 Actions.moveBy(0f, Gdx.graphics.getHeight(), 0.5f, Interpolation.sine),
+                Actions.delay(0.5f),
                 Actions.run(() -> game.setScreen(new GameScreen(service, stage)))
             ));
         }

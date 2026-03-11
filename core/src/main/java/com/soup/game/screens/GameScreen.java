@@ -46,6 +46,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        stage.addAction(Actions.fadeIn(1f, Interpolation.fade));
         gameService = service.get(GameService.class);
         gameService.update(0f);
         Hand hand = gameService.getTable().getHand();
