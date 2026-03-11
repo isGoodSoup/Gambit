@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.soup.game.scene.Table;
-import com.soup.game.screens.GameScreen;
+import com.soup.game.screens.OpenScreen;
 import com.soup.game.service.*;
 
 public class GambitGame extends Game {
@@ -27,6 +27,6 @@ public class GambitGame extends Game {
         service.register(GameService.class, new GameService(table, stage,
             service.get(DeckService.class), service.get(AudioService.class)));
         service.register(UIAssets.class, new UIAssets());
-        setScreen(new GameScreen(service, stage));
+        setScreen(new OpenScreen(this, stage, service));
     }
 }

@@ -1,5 +1,6 @@
 package com.soup.game.service;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -67,11 +68,11 @@ public class GameService implements Service {
             for(int i = 0; i < selected.size(); i++) {
                 Card c = selected.get(i);
                 boolean last = (i == selected.size() - 1);
-                float duration = 0.4f;
+                float duration = 0.2f;
                 c.setAnimating(true);
                 c.addAction(Actions.sequence(
-                    Actions.moveBy(0f, 150f, duration, Interpolation.sine),
-                    Actions.delay(duration),
+                    Actions.moveTo(c.getX(), Gdx.graphics.getHeight()/2f, duration, Interpolation.sine),
+                    Actions.delay(1f),
                     Actions.run(() -> {
                         c.setAnimating(false);
                         audioService.playFX(1);
