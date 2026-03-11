@@ -19,8 +19,6 @@ import com.soup.game.service.*;
 public class GameScreen implements Screen {
     private final ServiceFactory service;
     private final Stage stage;
-    private final float buttonX = 150f;
-    private final float buttonY = Gdx.graphics.getHeight()/2f - 100f;
     private final float buttonWidth = 60f;
     private final float buttonHeight = 60f;
     private final float spacing = buttonWidth/4f;
@@ -50,15 +48,29 @@ public class GameScreen implements Screen {
         Hand hand = gameService.getTable().getHand();
         Gdx.input.setInputProcessor(stage);
 
-        float width = 800f;
-        float height = 200f;
-        stage.addActor(new Window(Gdx.graphics.getWidth()/2f - width/2f, 100f, width, height));
+        float mainWidth = 800f;
+        float mainHeight = 200f;
+        float mainX = Gdx.graphics.getWidth()/2f - mainWidth/2f;
+        float mainY = hand.getCardsY() - 50f;
+        stage.addActor(new Window(mainX, mainY, mainWidth, mainHeight));
         hand.layout(stage);
 
-        stage.addActor(new Button(false, buttonX, buttonY,
+        float rectWidth = 225f;
+        float rectHeight = Gdx.graphics.getHeight() - 150f;
+        float rectX = 150f;
+        float rectY = Gdx.graphics.getHeight()/2f - rectHeight/2f;
+        Window buttonWindow = new Window(rectX, rectY, rectWidth, rectHeight);
+        stage.addActor(buttonWindow);
+
+        float totalButtonWidth = buttonWidth * 2 + spacing;
+        float buttonsStartX = rectX + (rectWidth - totalButtonWidth)/2f;
+        float buttonsY = rectY + rectHeight/2f - buttonHeight/2f;
+
+        stage.addActor(new Button(false, buttonsStartX, buttonsY,
             buttonWidth, buttonHeight, () -> hand.setReady(true)));
-        stage.addActor(new Button(true, buttonX + buttonWidth + spacing,
-            buttonY, buttonWidth, buttonHeight, () -> gameService.discardHand()));
+
+        stage.addActor(new Button(true, buttonsStartX + buttonWidth + spacing,
+            buttonsY, buttonWidth, buttonHeight, () -> gameService.discardHand()));
     }
 
     @Override
@@ -87,9 +99,18 @@ public class GameScreen implements Screen {
         GlyphLayout layout = new GlyphLayout(font, score);
 
         stage.getBatch().begin();
-        float centerX = buttonX + (buttonWidth * 2 + spacing)/2f;
+
+        float rectWidth = 225f;
+        float rectX = 150f;
+        float rectHeight = Gdx.graphics.getHeight() - 150f;
+        float rectY = Gdx.graphics.getHeight()/2f - rectHeight/2f;
+
+        float centerX = rectX + rectWidth/2f;
         float textX = centerX - layout.width/2f;
-        float textY = Gdx.graphics.getHeight()/2f + 25f;
+
+        float buttonsY = rectY + rectHeight/2f - buttonHeight/2f;
+        float textY = buttonsY + buttonHeight + 50f;
+
         font.draw(stage.getBatch(), layout, textX, textY);
         service.get(RenderService.class).drawBack(stage);
         stage.getBatch().end();

@@ -16,11 +16,10 @@ public class Card extends Actor implements Entity {
     private final Rank rank;
     private static float globalTime = 0f;
     private final float points;
-    private final float moveAmount = 30f;
+    private final float moveAmount = 16f;
     private final float floatAmplitude = 4f;
-    private final float cardBaseY = 150f;
+    private final float baseY = 120f;
     private float width, height;
-    private float baseY;
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
@@ -37,8 +36,7 @@ public class Card extends Actor implements Entity {
         this.height = region.getRegionHeight()/2f;
 
         setSize(width, height);
-        setPosition(getX(), cardBaseY);
-        baseY = getY();
+        setPosition(getX(), baseY);
         setTouchable(Touchable.enabled);
 
         addListener(new InputListener() {
@@ -70,7 +68,7 @@ public class Card extends Actor implements Entity {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                setSize(width + 25f, height + 25f);
+                setSize(width + 5f, height + 5f);
             }
 
             @Override
@@ -111,7 +109,6 @@ public class Card extends Actor implements Entity {
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
-        if(!isDragging) { baseY = y; }
     }
 
     public long getId() {
@@ -154,10 +151,13 @@ public class Card extends Actor implements Entity {
             return;
         }
         isSelected = false;
-        baseY = cardBaseY;
     }
 
     public static void updateGlobalTime(float delta) {
         globalTime += delta;
+    }
+
+    public float getBaseY() {
+        return baseY;
     }
 }

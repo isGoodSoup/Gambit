@@ -92,6 +92,10 @@ public class Hand {
         return cards.isEmpty();
     }
 
+    public float getCardsY() {
+        return cards.getFirst().getBaseY();
+    }
+
     public void layout(Stage stage) {
         for(Card c : cards) {
             if(c.getStage() != null) {

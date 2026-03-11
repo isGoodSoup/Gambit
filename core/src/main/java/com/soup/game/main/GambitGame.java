@@ -16,9 +16,9 @@ public class GambitGame extends Game {
         stage.setDebugAll(false);
         stage.getRoot().setTransform(false);
 
-        String sheet = "cards_4x.png";
-        String jokers = "jokers_4x.png";
-        String back = "cards_back.png";
+        String sheet = "sprites/cards_4x.png";
+        String jokers = "sprites/jokers_4x.png";
+        String back = "sprites/cards_back.png";
 
         service.register(RenderService.class, new RenderService(sheet, jokers, back, 1));
         Table table = new Table(service.get(RenderService.class));
