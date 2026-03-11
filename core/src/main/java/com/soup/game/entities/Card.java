@@ -24,7 +24,6 @@ public class Card extends Actor implements Entity {
     private final boolean isJoker;
     private boolean isDragging;
     private boolean isSelected;
-    private Action animation;
 
     public Card(Suit suit, Rank rank, float points, boolean isJoker,
                 TextureRegion region) {
@@ -53,7 +52,6 @@ public class Card extends Actor implements Entity {
                 originalX = getX();
                 originalY = getY();
                 isDragging = true;
-                removeAction(animation);
                 return true;
             }
 
@@ -67,6 +65,7 @@ public class Card extends Actor implements Entity {
                 isDragging = false;
                 setSize(width, height);
                 setPosition(originalX, originalY);
+                deselect();
             }
 
             @Override
