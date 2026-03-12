@@ -14,6 +14,7 @@ import com.soup.game.entities.*;
 import com.soup.game.scene.Hand;
 import com.soup.game.service.AudioService;
 import com.soup.game.service.GameService;
+import com.soup.game.service.RenderService;
 import com.soup.game.service.ServiceFactory;
 
 @SuppressWarnings("all")
@@ -89,6 +90,12 @@ public class GameScreen implements Screen {
         float textY = buttonsY + buttonHeight + 50f;
         score.setPosition(centerX, textY);
         group.addActor(score);
+
+        Jokers jokers = new Jokers(service.get(RenderService.class));
+        group.addActor(new Window(mainX, Gdx.graphics.getHeight() - mainHeight - 75f,
+            mainWidth, mainHeight));
+        jokers.setPosition(mainX + 25f, mainHeight + 75f);
+        group.addActor(jokers);
 
         stage.addActor(group);
         group.setPosition(0, -Gdx.graphics.getHeight());
