@@ -128,17 +128,46 @@ public class GameService implements Service {
         }
 
         for(Card c : toDiscard) {
-            table.discard(c);
-            hand.remove(c);
+            c.setAnimating(true);
+            c.addAction(Actions.sequence(
+                Actions.parallel(
+                    Actions.moveTo(c.getX(), -100f, 0.25f, Interpolation.sine),
+                    Actions.scaleBy(0.2f, 0.2f, 0.15f)
+                ),
+                Actions.run(() -> {
+                    c.setAnimating(false);
+                    table.discard(c);
+                    hand.remove(c);
+                })
+            ));
 
             Card newCard = deckService.draw();
             if(newCard != null) {
+                float deckX = table.getDeck().getX();
+                float deckY = table.getDeck().getY();
+
+                newCard.setPosition(deckX, deckY);
+                newCard.getColor().a = 0f;
+
                 hand.add(newCard);
+                float targetX = newCard.getX();
+                float targetY = newCard.getY();
+
+                newCard.addAction(Actions.sequence(
+                    Actions.parallel(
+                        Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                    )
+                ));
             }
         }
 
         hand.clearSelection();
-        hand.layout(stage, true);
+        stage.addAction(Actions.sequence(
+            Actions.delay(0.4f),
+            Actions.run(() -> {
+                hand.layout(stage, true);
+            })
+        ));
         hand.setReady(false);
 
         table.setState(GameState.PLAYER_TURN);

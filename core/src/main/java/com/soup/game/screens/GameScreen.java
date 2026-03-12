@@ -92,8 +92,6 @@ public class GameScreen implements Screen {
         group.addActor(score);
 
         Jokers jokers = new Jokers(service.get(RenderService.class));
-        group.addActor(new Window(mainX, Gdx.graphics.getHeight() - mainHeight - 75f,
-            mainWidth, mainHeight));
         jokers.setPosition(mainX + 25f, mainHeight + 75f);
         group.addActor(jokers);
 

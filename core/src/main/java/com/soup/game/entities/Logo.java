@@ -11,7 +11,7 @@ import com.soup.game.intf.Entity;
 @SuppressWarnings("all")
 public class Logo extends Actor
     implements Entity {
-    private static final Texture logo = new Texture("logo.png");
+    private static final Texture logo = new Texture("logo_v2.png");
 
     public Logo() {
         setSize(logo.getWidth(), logo.getHeight());
@@ -20,7 +20,8 @@ public class Logo extends Actor
         float duration = 1f;
         addAction(Actions.delay(duration));
         addAction(Actions.sequence(
-            Actions.moveTo(getX(), Gdx.graphics.getHeight()/2f, duration/2f, Interpolation.sine),
+            Actions.moveTo(getX(), Gdx.graphics.getHeight()/2f - 150f,
+                duration/2f, Interpolation.sine),
             Actions.forever(
                 Actions.sequence(
                     Actions.moveBy(0f, 8f, duration, Interpolation.sine),
