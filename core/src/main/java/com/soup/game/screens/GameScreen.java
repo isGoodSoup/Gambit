@@ -2,12 +2,14 @@ package com.soup.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -25,6 +27,8 @@ public class GameScreen implements Screen {
     private final float spacing = buttonWidth/8f;
 
     private Table table;
+    private Label currency;
+    private Label score;
     private GameService gameService;
 
     public GameScreen(ServiceFactory service, Stage stage) {
@@ -49,11 +53,9 @@ public class GameScreen implements Screen {
         stage.addAction(Actions.fadeIn(1f, Interpolation.fade));
         gameService = service.get(GameService.class);
 
-        gameService.update(0f);
+        gameService.update(0f, currency, score);
         Hand hand = gameService.getTable().getHand();
         Deck deck = gameService.getTable().getDeck();
-        Credit credit = new Credit(service);
-        Score score = new Score(service);
         Gdx.input.setInputProcessor(stage);
 
         float mainWidth = 800f;
@@ -64,8 +66,8 @@ public class GameScreen implements Screen {
             hand.getCardsY() - 50f
         );
         group.addActor(mainWindow);
-        hand.layout(stage, false);
 
+        hand.layout(stage, false);
         for(Card c : hand.getCards()) {
             group.addActor(c);
         }
@@ -74,11 +76,17 @@ public class GameScreen implements Screen {
         table.setFillParent(true);
         table.bottom().padBottom(25f);
 
-        Window currencyWindow = new Window(buttonWidth, buttonHeight);
-        currencyWindow.setContent(credit);
+        Label.LabelStyle labelStyle = new Label.LabelStyle
+            (service.get(UIAssets.class).getFont(), Color.WHITE);
 
-        Window scoreWindow = new Window(buttonWidth, buttonHeight);
-        scoreWindow.setContent(score);
+        currency = new Label("", labelStyle);
+        score = new Label("", labelStyle);
+
+        Window currencyWindow = new Window(buttonWidth, buttonHeight,
+            currency, service, new Color(1f, 0.8f, 0.3f, 1f));
+
+        Window scoreWindow = new Window(buttonWidth, buttonHeight,
+            score, service, Color.WHITE);
 
         String play = Localization.lang.t("button.play");
         String discard = Localization.lang.t("button.discard");
@@ -124,7 +132,8 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.1f, 0.5f, 0.3f, 1f);
-        gameService.update(delta);
+        gameService.update(delta, currency, score);
+        gameService.update(currency, score);
         Card.updateGlobalTime(Gdx.graphics.getDeltaTime());
         stage.act(Gdx.graphics.getDeltaTime());
         stage.draw();

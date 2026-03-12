@@ -70,5 +70,6 @@ public class Button extends Group
         if (isHovered) {
             patchFrame.draw(batch, getX(), getY(), getWidth(), getHeight());
         }
+        super.draw(batch, parentAlpha);
     }
 }
