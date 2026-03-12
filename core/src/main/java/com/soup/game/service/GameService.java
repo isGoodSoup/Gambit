@@ -61,38 +61,79 @@ public class GameService implements Service {
 
     private void playHand() {
         Hand hand = table.getHand();
-        if(hand.isReady()) {
-            List<Card> selected = List.copyOf(hand.getSelectedCards());
-            if(selected.isEmpty()) return;
-            lastPlayedCards = new ArrayList<>(selected);
-            for(int i = 0; i < selected.size(); i++) {
-                Card c = selected.get(i);
-                boolean last = (i == selected.size() - 1);
-                float duration = 0.2f;
-                c.setAnimating(true);
-                c.addAction(Actions.sequence(
-                    Actions.moveTo(c.getX(), Gdx.graphics.getHeight()/2f, duration, Interpolation.sine),
-                    Actions.delay(1f),
-                    Actions.run(() -> {
-                        c.setAnimating(false);
-                        audioService.playFX(1);
-                    }),
-                    Actions.run(() -> {
-                        table.add(c);
-                        hand.remove(c);
-                        if(last) {
-                            hand.clearSelection();
-                            hand.layout(stage, true);
-                            stage.addAction(Actions.sequence(
-                                Actions.run(() -> {
-                                    table.setState(GameState.SCORING);
-                                })
-                            ));
-                        }
-                    })
-                ));
-            }
+        if(!hand.isReady()) return;
+
+        List<Card> selected = List.copyOf(hand.getSelectedCards());
+        if(selected.isEmpty()) return;
+
+        lastPlayedCards = new ArrayList<>(selected);
+
+        float tableX = Gdx.graphics.getWidth() / 2f;
+        float tableY = Gdx.graphics.getHeight() / 2f;
+
+        final int[] finishedCount = {0};
+        final int total = selected.size();
+
+        for (Card c : selected) {
+            c.setAnimating(true);
+            c.addAction(Actions.sequence(
+                Actions.parallel(
+                    Actions.moveTo(tableX, tableY, 0.5f, Interpolation.sineOut),
+                    Actions.scaleBy(0.2f, 0.2f, 0.25f)
+                ),
+                Actions.run(() -> {
+                    c.setAnimating(false);
+                    table.add(c);
+                    hand.remove(c);
+                    audioService.playFX(1);
+                    finishedCount[0]++;
+                    if (finishedCount[0] == total) {
+                        refill(hand);
+                    }
+                })
+            ));
         }
+    }
+
+    private void refill(Hand hand) {
+        int missing = hand.getMaxSize() - hand.size();
+        if(missing <= 0) {
+            hand.clearSelection();
+            hand.setReady(false);
+            table.setState(GameState.SCORING);
+            return;
+        }
+
+        for(int i = 0; i < missing; i++) {
+            Card newCard = deckService.draw();
+            if(newCard == null) { break; }
+
+            float deckX = table.getDeck().getX();
+            float deckY = table.getDeck().getY();
+            newCard.setPosition(deckX, deckY);
+            newCard.getColor().a = 0f;
+
+            hand.add(newCard);
+
+            float targetX = newCard.getX();
+            float targetY = newCard.getY();
+
+            newCard.addAction(Actions.sequence(
+                Actions.parallel(
+                    Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                )
+            ));
+        }
+
+        stage.addAction(Actions.sequence(
+            Actions.delay(0.35f),
+            Actions.run(() -> {
+                hand.layout(stage, true);
+                hand.clearSelection();
+                hand.setReady(false);
+                table.setState(GameState.SCORING);
+            })
+        ));
     }
 
     private void scoreHand() {
@@ -102,20 +143,40 @@ public class GameService implements Service {
             return;
         }
 
-        HandType type = hand.evaluate(lastPlayedCards);
-        float points = hand.getValue(type, lastPlayedCards);
-        float chips = table.multiply(points);
-        table.addScore(chips);
+        HandType handValue = hand.evaluate(lastPlayedCards);
+        float points = hand.getValue(handValue, lastPlayedCards);
+        lastPlayedCards.clear();
+        table.addScore(points);
 
         while(hand.size() < hand.getMaxSize()) {
-            Card c = deckService.draw();
-            hand.add(c);
+            Card newCard = deckService.draw();
+            if(newCard == null) {
+                break;
+            }
+            float deckX = table.getDeck().getX();
+            float deckY = table.getDeck().getY();
+            newCard.setPosition(deckX, deckY);
+            newCard.getColor().a = 0f;
+            hand.add(newCard);
+            float targetX = newCard.getX();
+            float targetY = newCard.getY();
+
+            newCard.addAction(Actions.sequence(
+                Actions.parallel(
+                    Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                )
+            ));
         }
 
-        hand.layout(stage, true);
-        lastPlayedCards.clear();
-        hand.setReady(false);
-        table.setState(GameState.PLAYER_TURN);
+        stage.addAction(Actions.sequence(
+            Actions.delay(0.4f),
+            Actions.run(() -> {
+                hand.layout(stage, true);
+                lastPlayedCards.clear();
+                hand.setReady(false);
+                table.setState(GameState.PLAYER_TURN);
+            })
+        ));
     }
 
     public void discardHand() {

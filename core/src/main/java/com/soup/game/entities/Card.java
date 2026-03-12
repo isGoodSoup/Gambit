@@ -25,12 +25,11 @@ public class Card extends Actor implements Entity {
     private boolean isSelected;
     private boolean isAnimating;
 
-    public Card(Suit suit, Rank rank, float points, boolean isJoker,
-                TextureRegion region) {
+    public Card(Suit suit, Rank rank, boolean isJoker, TextureRegion region) {
         this.id = NEXT_ID++;
         this.suit = suit;
         this.rank = rank;
-        this.points = points;
+        this.points = rank.getPoints();
         this.isJoker = isJoker;
         this.region = region;
         this.width = region.getRegionWidth()/2f;
@@ -90,7 +89,7 @@ public class Card extends Actor implements Entity {
 
     @SuppressWarnings("all")
     public Card(Card card) {
-        this(card.suit, card.rank, card.points, card.isJoker, card.region);
+        this(card.suit, card.rank, card.isJoker, card.region);
     }
 
     @Override

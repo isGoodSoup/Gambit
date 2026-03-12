@@ -35,8 +35,7 @@ public class Deck extends Actor
     public void populate(RenderService renderService) {
         for(Suit suit : Suit.values()) {
             for(Rank rank : Rank.values()) {
-                add(new Card(suit, rank, rank.getPoints(), false,
-                    renderService.getRegion(suit, rank)));
+                add(new Card(suit, rank, false, renderService.getRegion(suit, rank)));
             }
         }
     }

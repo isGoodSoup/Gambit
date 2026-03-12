@@ -1,6 +1,6 @@
 <p align="center">
   <img src="assets/logo.png" alt="gambit!" 
-width="944"/>
+width="736"/>
 </p>
 
 ### About

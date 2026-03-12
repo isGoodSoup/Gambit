@@ -18,7 +18,6 @@ public class Table {
 
     private int round;
     private int chips;
-    private float multiplier;
 
     public Table(RenderService renderService) {
         this.deck = new Deck();
@@ -62,9 +61,5 @@ public class Table {
 
     public void lose() {
         this.chips = 0;
-    }
-
-    public float multiply(float i) {
-        return this.multiplier += i;
     }
 }

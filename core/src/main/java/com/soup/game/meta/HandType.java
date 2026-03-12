@@ -9,12 +9,12 @@ public enum HandType {
     PAIR(10f),
     TWO_PAIR(20f),
     TRIPS(25f),
-    STRAIGHT(35f),
-    FLUSH(40f),
-    FULL_HOUSE(80f),
-    QUADS(90f),
-    STRAIGHT_FLUSH(100f),
-    ROYAL_FLUSH(200f);
+    STRAIGHT(30f),
+    FLUSH(35f),
+    FULL_HOUSE(40f),
+    QUADS(45f),
+    STRAIGHT_FLUSH(50f),
+    ROYAL_FLUSH(100f);
 
     private final float value;
 
@@ -22,11 +22,15 @@ public enum HandType {
         this.value = value;
     }
 
-    public float calc(List<Card> cards) {
-        float total = 0f;
-        for(Card c : cards) {
-            total += c.getPoints();
+    public float calc(List<Card> selected) {
+        float kicker = 0f;
+        for (Card c : selected) {
+            kicker += c.getPoints();
         }
-        return total + this.value;
+        return this.value + kicker;
+    }
+
+    public float getValue() {
+        return value;
     }
 }
