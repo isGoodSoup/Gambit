@@ -146,6 +146,9 @@ public class GameService implements Service {
         HandType handValue = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(handValue, lastPlayedCards);
         lastPlayedCards.clear();
+        for(Card c : lastPlayedCards) {
+            table.gains(c);
+        }
         table.addScore(points);
 
         while(hand.size() < hand.getMaxSize()) {

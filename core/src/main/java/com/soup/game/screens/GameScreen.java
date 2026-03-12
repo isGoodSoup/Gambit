@@ -52,6 +52,7 @@ public class GameScreen implements Screen {
         gameService.update(0f);
         Hand hand = gameService.getTable().getHand();
         Deck deck = gameService.getTable().getDeck();
+        Credit credit = new Credit(service);
         Score score = new Score(service);
         Gdx.input.setInputProcessor(stage);
 
@@ -70,6 +71,7 @@ public class GameScreen implements Screen {
         float rectHeight = Gdx.graphics.getHeight() - 150f;
         float rectX = 150f;
         float rectY = Gdx.graphics.getHeight()/2f - rectHeight/2f;
+
         Window buttonWindow = new Window(rectX, rectY, rectWidth, rectHeight);
         group.addActor(buttonWindow);
 
@@ -88,8 +90,11 @@ public class GameScreen implements Screen {
 
         float centerX = rectX + rectWidth/2f;
         float textY = buttonsY + buttonHeight + 50f;
+        credit.setPosition(centerX, textY - 125f);
         score.setPosition(centerX, textY);
+
         group.addActor(score);
+        group.addActor(credit);
 
         Jokers jokers = new Jokers(service.get(RenderService.class));
         jokers.setPosition(mainX + 25f, mainHeight + 75f);

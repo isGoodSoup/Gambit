@@ -18,6 +18,7 @@ public class Table {
 
     private int round;
     private int chips;
+    private int money;
 
     public Table(RenderService renderService) {
         this.deck = new Deck();
@@ -46,6 +47,13 @@ public class Table {
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
+
+    public int gains(Card c) {
+        return money += (int) c.getPoints();
+    }
+    public int getMoney() {
+        return money;
+    }
 
     public void discard(Card c) {
         discarded.add(c);

@@ -12,13 +12,13 @@ import com.soup.game.service.GameService;
 import com.soup.game.service.ServiceFactory;
 import com.soup.game.service.UIAssets;
 
-public class Score extends Actor
+public class Credit extends Actor
     implements Entity {
     private final ServiceFactory service;
     private final GlyphLayout layout = new GlyphLayout();
-    private int lastScore = -1;
+    private int lastCredit = -1;
 
-    public Score(ServiceFactory service) {
+    public Credit(ServiceFactory service) {
         this.service = service;
         setScale(1f);
     }
@@ -26,9 +26,9 @@ public class Score extends Actor
     @Override
     public void act(float delta) {
         super.act(delta);
-        int score = (int) service.get(GameService.class).getTable().getScore();
-        if(score != lastScore) {
-            lastScore = score;
+        int score = service.get(GameService.class).getTable().getMoney();
+        if(score != lastCredit) {
+            lastCredit = score;
             clearActions();
             setScale(1f);
             addAction(Actions.sequence(
@@ -41,8 +41,8 @@ public class Score extends Actor
     @Override
     public void draw(Batch batch, float parentAlpha) {
         BitmapFont font = service.get(UIAssets.class).getFont();
-        font.setColor(Color.WHITE);
-        String score = String.valueOf(lastScore);
+        font.setColor(new Color(1f, 0.7f, 0.2f, 1f));
+        String score = String.valueOf(lastCredit);
 
         float scale = getScaleX();
         font.getData().setScale(scale);
