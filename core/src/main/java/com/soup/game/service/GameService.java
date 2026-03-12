@@ -3,7 +3,6 @@ package com.soup.game.service;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -155,25 +154,8 @@ public class GameService implements Service {
         HandType handValue = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(handValue, lastPlayedCards);
         lastPlayedCards.clear();
-        float previousScore = table.getScore();
         table.addScore(points);
-        if(table.getScore() != previousScore) {
-            Group wrapper = new Group();
-            wrapper.addActor(score);
-            wrapper.setPosition(score.getX(), score.getY());
-            stage.addActor(wrapper);
-            animatePop(wrapper);
-        }
-
-        float previousBalance = table.getCurrency();
         table.addCurrency(handValue.getValue());
-        if(table.getCurrency() != previousBalance) {
-            Group wrapper = new Group();
-            wrapper.addActor(currency);
-            wrapper.setPosition(currency.getX(), currency.getY());
-            stage.addActor(wrapper);
-            animatePop(wrapper);
-        }
 
         while(hand.size() < hand.getMaxSize()) {
             Card newCard = deckService.draw();
@@ -203,14 +185,6 @@ public class GameService implements Service {
                 hand.setReady(false);
                 table.setState(GameState.PLAYER_TURN);
             })
-        ));
-    }
-
-    private void animatePop(Group group) {
-        group.addAction(Actions.sequence(
-            Actions.delay(0.01f),
-            Actions.scaleTo(1.5f, 1.5f, 0.1f, Interpolation.sineOut),
-            Actions.scaleTo(1f, 1f, 0.2f, Interpolation.sineIn)
         ));
     }
 
