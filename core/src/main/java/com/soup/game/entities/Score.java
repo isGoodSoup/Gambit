@@ -17,6 +17,7 @@ public class Score extends Actor
     private final ServiceFactory service;
     private final GlyphLayout layout = new GlyphLayout();
     private int lastScore = -1;
+    private String score;
 
     public Score(ServiceFactory service) {
         this.service = service;
@@ -42,16 +43,26 @@ public class Score extends Actor
     public void draw(Batch batch, float parentAlpha) {
         BitmapFont font = service.get(UIAssets.class).getFont();
         font.setColor(Color.WHITE);
-        String score = String.valueOf(lastScore);
+        score = String.valueOf(lastScore);
 
         float scale = getScaleX();
         font.getData().setScale(scale);
 
         layout.setText(font, score);
-        float textX = getX() - layout.width/2f;
-        float textY = getY();
+        float textX = getX() + getWidth()/2f - layout.width/2f;
+        float textY = getY() + getHeight()/2f + layout.height/2f;
 
         font.draw(batch, layout, textX, textY);
         font.getData().setScale(1f);
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        setOrigin(getWidth()/2f, getHeight()/2f);
+    }
+
+    public String getValue() {
+        return score;
     }
 }

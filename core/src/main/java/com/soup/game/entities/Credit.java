@@ -17,6 +17,7 @@ public class Credit extends Actor
     private final ServiceFactory service;
     private final GlyphLayout layout = new GlyphLayout();
     private int lastCredit = -1;
+    private String credit;
 
     public Credit(ServiceFactory service) {
         this.service = service;
@@ -26,7 +27,7 @@ public class Credit extends Actor
     @Override
     public void act(float delta) {
         super.act(delta);
-        int score = service.get(GameService.class).getTable().getMoney();
+        int score = (int) service.get(GameService.class).getTable().getCurrency();
         if(score != lastCredit) {
             lastCredit = score;
             clearActions();
@@ -41,17 +42,27 @@ public class Credit extends Actor
     @Override
     public void draw(Batch batch, float parentAlpha) {
         BitmapFont font = service.get(UIAssets.class).getFont();
-        font.setColor(new Color(1f, 0.7f, 0.2f, 1f));
-        String score = String.valueOf(lastCredit);
+        font.setColor(new Color(1f, 0.8f, 0.3f, 1f));
+        credit = "$" + lastCredit;
 
         float scale = getScaleX();
         font.getData().setScale(scale);
 
-        layout.setText(font, score);
-        float textX = getX() - layout.width/2f;
-        float textY = getY();
+        layout.setText(font, credit);
+        float textX = getX() + getWidth()/2f - layout.width/2f;
+        float textY = getY() + getHeight()/2f + layout.height/2f;
 
         font.draw(batch, layout, textX, textY);
         font.getData().setScale(1f);
+    }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        setOrigin(getWidth()/2f, getHeight()/2f);
+    }
+
+    public String getValue() {
+        return credit;
     }
 }

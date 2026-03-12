@@ -14,11 +14,9 @@ public class Table {
     private final Deck discarded;
     private final List<Card> inPlay;
     private float score;
-    private GameState state;
-
+    private float currency;
     private int round;
-    private int chips;
-    private int money;
+    private GameState state;
 
     public Table(RenderService renderService) {
         this.deck = new Deck();
@@ -47,27 +45,10 @@ public class Table {
 
     public GameState getState() { return state; }
     public void setState(GameState state) { this.state = state; }
+    public void discard(Card c) { discarded.add(c); }
+    public void roundUp(int i) { this.round += i; }
 
-    public int gains(Card c) {
-        return money += (int) c.getPoints();
-    }
-    public int getMoney() {
-        return money;
-    }
-
-    public void discard(Card c) {
-        discarded.add(c);
-    }
-
-    public void roundUp(int i) {
-        this.round += i;
-    }
-
-    public void addChip(int i) {
-        this.chips += i;
-    }
-
-    public void lose() {
-        this.chips = 0;
-    }
+    public void addCurrency(float i) { this.currency += i; }
+    public float getCurrency() { return currency; }
+    public void setCurrency(float currency) { this.currency = currency; }
 }

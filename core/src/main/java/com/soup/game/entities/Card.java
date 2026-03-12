@@ -18,7 +18,7 @@ public class Card extends Actor implements Entity {
     private final float points;
     private final float moveAmount = 16f;
     private final float floatAmplitude = 4f;
-    private final float baseY = 120f;
+    private final float baseY = 180f;
     private float width, height;
     private final boolean isJoker;
     private boolean isDragging;

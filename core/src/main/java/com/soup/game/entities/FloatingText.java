@@ -14,7 +14,6 @@ public class FloatingText extends Label
         super(text, createStyle(service));
 
         setAlignment(com.badlogic.gdx.utils.Align.center);
-
         addAction(Actions.forever(
             Actions.sequence(
                 Actions.fadeOut(1f, Interpolation.fade),

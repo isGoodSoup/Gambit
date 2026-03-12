@@ -120,7 +120,7 @@ public class GameService implements Service {
 
             newCard.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                    Actions.moveTo(targetX, targetY, 0.4f, Interpolation.sineOut)
                 )
             ));
         }
@@ -146,10 +146,8 @@ public class GameService implements Service {
         HandType handValue = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(handValue, lastPlayedCards);
         lastPlayedCards.clear();
-        for(Card c : lastPlayedCards) {
-            table.gains(c);
-        }
         table.addScore(points);
+        table.addCurrency(handValue.getValue());
 
         while(hand.size() < hand.getMaxSize()) {
             Card newCard = deckService.draw();
