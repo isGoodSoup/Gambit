@@ -169,6 +169,7 @@ public class GameService implements Service {
         table.addScore(points);
         table.addCurrency(handValue.getValue());
         log.info("Score!");
+        log.info("Scored hand: {}", handValue);
         log.info("Current score: {}", table.getScore());
         log.info("Current balance: {}", table.getCurrency());
 
