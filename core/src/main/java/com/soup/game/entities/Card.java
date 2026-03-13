@@ -38,7 +38,7 @@ public class Card extends Actor
         this.id = NEXT_ID++;
         this.suit = suit;
         this.rank = rank;
-        this.points = rank.getPoints();
+        this.points = (rank != null) ? rank.getPoints() : 0f;
         this.isJoker = isJoker;
         this.region = region;
         this.width = region.getRegionWidth();

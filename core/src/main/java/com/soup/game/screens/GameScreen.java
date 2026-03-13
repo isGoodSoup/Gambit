@@ -111,19 +111,8 @@ public class GameScreen implements Screen {
         table.add(scoreWindow).width(buttonWidth).height(buttonHeight);
         stage.addActor(table);
 
-        Jokers jokers = new Jokers(service.get(RenderService.class));
-        jokers.setPosition(Gdx.graphics.getWidth()/2f - jokers.getWidth()/2f,
-            mainHeight + 75f);
-
-        stage.addActor(jokers);
         stage.addActor(group);
-
-        jokers.setPosition(0, -Gdx.graphics.getHeight());
-        jokers.addAction(Actions.sequence(
-            Actions.delay(0.4f),
-            Actions.moveTo(0, 0, 0.8f, Interpolation.sine)
-        ));
-
+        
         table.setPosition(0, -Gdx.graphics.getHeight());
         table.addAction(Actions.sequence(
             Actions.delay(0.4f),

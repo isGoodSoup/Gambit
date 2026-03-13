@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.soup.game.intf.Entity;
+import com.soup.game.meta.Jokers;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 import com.soup.game.service.RenderService;
@@ -38,6 +39,9 @@ public class Deck extends Actor
                 add(new Card(suit, rank, false, renderService.getRegion(suit, rank)));
             }
         }
+
+        add(new Joker(100f, true, renderService.getRegion(Jokers.BLACK)));
+        add(new Joker(100f, true, renderService.getRegion(Jokers.RED)));
     }
 
     public void add(Card c) {

@@ -149,7 +149,8 @@ public class GameService implements Service {
 
             newCard.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(targetX, targetY, 0.4f * gameSpeed, Interpolation.sineOut)
+                    Actions.moveTo(targetX, targetY, 0.4f * gameSpeed,
+                        Interpolation.sineOut)
                 )
             ));
         }
@@ -174,6 +175,10 @@ public class GameService implements Service {
 
         HandType handValue = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(handValue, lastPlayedCards);
+        if(hand.getJokerCount() > 0) {
+            hand.setJokerMultiplier(hand.getJokerCount());
+            points *= hand.getJokerMultiplier();
+        }
         lastPlayedCards.clear();
         table.addScore(points);
         table.addCurrency(handValue.getValue());
@@ -196,7 +201,8 @@ public class GameService implements Service {
 
             newCard.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(targetX, targetY, 0.3f * gameSpeed, Interpolation.sineOut),
+                    Actions.moveTo(targetX, targetY, 0.3f * gameSpeed,
+                        Interpolation.sineOut),
                     Actions.run(newCard::flip)
                 )
             ));
@@ -227,8 +233,10 @@ public class GameService implements Service {
             c.setAnimating(true);
             c.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(c.getX(), -100f, 0.25f * gameSpeed, Interpolation.sine),
-                    Actions.scaleBy(0.2f, 0.2f * gameSpeed, 0.15f)
+                    Actions.moveTo(c.getX(), -100f, 0.25f * gameSpeed,
+                        Interpolation.sine),
+                    Actions.scaleBy(0.2f, 0.2f,
+                        0.2f * gameSpeed)
                 ),
                 Actions.run(() -> {
                     c.setAnimating(false);
@@ -252,7 +260,8 @@ public class GameService implements Service {
 
                 newCard.addAction(Actions.sequence(
                     Actions.parallel(
-                        Actions.moveTo(targetX, targetY, 0.4f * gameSpeed, Interpolation.sineOut)
+                        Actions.moveTo(targetX, targetY, 0.4f * gameSpeed,
+                            Interpolation.sineOut)
                     )
                 ));
             }

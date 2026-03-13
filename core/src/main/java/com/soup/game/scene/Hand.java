@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.entities.Card;
+import com.soup.game.entities.Joker;
 import com.soup.game.meta.HandType;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
@@ -16,6 +17,8 @@ public class Hand {
     private static final int MAX_SELECT = 5;
     private final List<Card> cards;
     private final List<Card> selected;
+    private int jokerCount = 0;
+    private int jokerMultiplier = 0;
     private boolean isReady;
 
     public Hand() {
@@ -25,6 +28,16 @@ public class Hand {
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public int getJokerCount() {
+        return jokerCount;
+    }
+    public int getJokerMultiplier() {
+        return jokerMultiplier;
+    }
+    public void setJokerMultiplier(int jokerCount) {
+        this.jokerMultiplier += jokerCount;
     }
 
     public void add(Card c) {
@@ -148,15 +161,27 @@ public class Hand {
 
     @SuppressWarnings("all")
     public HandType evaluate(List<Card> activeHand) {
-        int size = activeHand.size();
-        if(size == 0 || size == 1) {
-            return HandType.HIGH_CARD;
+        if(activeHand.isEmpty()) { return HandType.HIGH_CARD; }
+
+        List<Card> nonJokers = new ArrayList<>();
+        for(Card c : activeHand) {
+            if(c instanceof Joker) {
+                jokerCount++;
+            } else {
+                nonJokers.add(c);
+            }
         }
 
-        if(size < 5) {
-            Map<Rank, Integer> rankCounts = new HashMap<>();
-            for(Card c : activeHand) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+        int totalCards = nonJokers.size() + jokerCount;
 
+        Map<Rank, Integer> rankCounts = new HashMap<>();
+        Map<Suit, Integer> suitCounts = new HashMap<>();
+        for(Card c : nonJokers) {
+            rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+            suitCounts.put(c.getSuit(), suitCounts.getOrDefault(c.getSuit(), 0) + 1);
+        }
+
+        if(totalCards < 5) {
             int pairs = 0, trips = 0, quads = 0;
             for(int count : rankCounts.values()) {
                 pairs += (count == 2 ? 1 : 0);
@@ -164,48 +189,50 @@ public class Hand {
                 quads += (count == 4 ? 1 : 0);
             }
 
-            return quads > 0 ? HandType.QUADS
-                : (trips > 0 && pairs > 0) ? HandType.FULL_HOUSE
-                : (trips > 0) ? HandType.TRIPS
-                : (pairs > 1) ? HandType.TWO_PAIR
-                : (pairs == 1) ? HandType.PAIR
-                : HandType.HIGH_CARD;
+            if(quads > 0) { return HandType.QUADS; }
+            if(trips > 0 && pairs > 0) { return HandType.FULL_HOUSE; }
+            if(trips > 0) { return HandType.TRIPS; }
+            if(pairs > 1) { return HandType.TWO_PAIR; }
+            if(pairs == 1) { return HandType.PAIR; }
+            return HandType.HIGH_CARD;
         }
 
-        List<Card> sorted = new ArrayList<>(activeHand);
-        sorted.sort(Comparator.comparing(Card::getRank));
+        List<Integer> ranks = nonJokers.stream().map(c ->
+            c.getRank().ordinal()).sorted().toList();
 
-        Map<Rank, Integer> rankCounts = new HashMap<>();
-        for(Card c : sorted) rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+        boolean isStraight = false;
+        for(int start = 0; start <= 14 - 5; start++) {
+            int needed = 0;
+            for(int offset = 0; offset < 5; offset++) {
+                if(!ranks.contains(start + offset)) {
+                    needed++;
+                }
+            }
+            if(needed <= jokerCount) { isStraight = true; break; }
+        }
 
-        Collection<Integer> counts = rankCounts.values();
-        boolean hasPair = counts.contains(2);
-        boolean hasTrips = counts.contains(3);
-        boolean hasQuads = counts.contains(4);
+        int finalJokerCount = jokerCount;
+        boolean isFlush = suitCounts.values().stream().anyMatch(count -> count + finalJokerCount >= 5);
+        boolean isRoyal = isFlush && ranks.contains(Rank.TEN.ordinal()) && ranks.contains(Rank.JACK.ordinal())
+            && ranks.contains(Rank.QUEEN.ordinal()) && ranks.contains(Rank.KING.ordinal())
+            && ranks.contains(Rank.ACE.ordinal());
 
-        Suit firstSuit = sorted.getFirst().getSuit();
-        boolean isFlush = sorted.stream().allMatch(c -> c.getSuit() == firstSuit);
+        int pairs = 0, trips = 0, quads = 0;
+        for(int count : rankCounts.values()) {
+            pairs += (count == 2 ? 1 : 0);
+            trips += (count == 3 ? 1 : 0);
+            quads += (count == 4 ? 1 : 0);
+        }
 
-        boolean isStraight = true;
-        for(int i = 0; i < sorted.size() - 1; i++)
-            if(sorted.get(i + 1).getRank().ordinal() != sorted.get(i).getRank().ordinal() + 1) { isStraight = false; break; }
-
-        boolean isRoyal = sorted.get(0).getRank() == Rank.TEN
-            && sorted.get(1).getRank() == Rank.JACK
-            && sorted.get(2).getRank() == Rank.QUEEN
-            && sorted.get(3).getRank() == Rank.KING
-            && sorted.get(4).getRank() == Rank.ACE
-            && isFlush;
-
-        return (isStraight && isRoyal) ? HandType.ROYAL_FLUSH
-            : (isStraight && isFlush) ? HandType.STRAIGHT_FLUSH
-            : hasQuads ? HandType.QUADS
-            : (hasTrips && hasPair) ? HandType.FULL_HOUSE
-            : isFlush ? HandType.FLUSH
-            : isStraight ? HandType.STRAIGHT
-            : hasTrips ? HandType.TRIPS
-            : (counts.stream().filter(c -> c == 2).count() == 2) ? HandType.TWO_PAIR
-            : hasPair ? HandType.PAIR
-            : HandType.HIGH_CARD;
+        return (isStraight && isFlush && isRoyal) ? HandType.ROYAL_FLUSH :
+            (isStraight && isFlush) ? HandType.STRAIGHT_FLUSH :
+                (quads > 0) ? HandType.QUADS :
+                    (trips > 0 && pairs > 0) ? HandType.FULL_HOUSE :
+                        (isFlush) ? HandType.FLUSH :
+                            (isStraight) ? HandType.STRAIGHT :
+                                (trips > 0) ? HandType.TRIPS :
+                                    (pairs > 1) ? HandType.TWO_PAIR :
+                                        (pairs == 1) ? HandType.PAIR :
+                                            HandType.HIGH_CARD;
     }
 }

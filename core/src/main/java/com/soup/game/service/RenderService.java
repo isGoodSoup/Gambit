@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.soup.game.intf.Service;
+import com.soup.game.meta.Jokers;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
@@ -30,7 +31,7 @@ public class RenderService implements Service {
         this.cardRegions = TextureRegion.split(sheet, cardWidth, cardHeight);
 
         this.jokerCols = jokerCols;
-        this.jokerRows = 4;
+        this.jokerRows = 2;
 
         int jokerWidth = jokers.getWidth()/jokerCols;
         int jokerHeight = jokers.getHeight()/jokerRows;
@@ -43,7 +44,7 @@ public class RenderService implements Service {
 
     public TextureRegion getRegion(Suit suit, Rank rank) {
         int row = switch(suit) {
-            case DIAMONDS -> 0;
+            case DIAMONDS-> 0;
             case HEARTS -> 1;
             case SPADES -> 2;
             case CLUBS -> 3;
@@ -53,7 +54,7 @@ public class RenderService implements Service {
         return cardRegions[row][col];
     }
 
-    public TextureRegion getRegion(Suit suit) {
+    public TextureRegion getRegion(Jokers suit) {
         int row = suit.ordinal();
         int col = 0;
         return jokerRegions[row][col];
