@@ -62,8 +62,8 @@ public class GameScreen implements Screen {
         Deck deck = gameService.getTable().getDeck();
         Gdx.input.setInputProcessor(stage);
 
-        float mainWidth = 800f;
-        float mainHeight = 200f;
+        float mainWidth = 600f;
+        float mainHeight = 100f;
         Window mainWindow = new Window(mainWidth, mainHeight);
         mainWindow.setPosition(
             Gdx.graphics.getWidth()/2f - mainWidth/2f,

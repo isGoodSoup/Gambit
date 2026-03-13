@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class GambitGame extends Game {
     private static final Logger log = LoggerFactory.getLogger(GambitGame.class);
+    private static final String quality = "4x";
 
     @Override
     public void create() {
@@ -20,8 +21,8 @@ public class GambitGame extends Game {
         stage.setDebugAll(false);
         stage.getRoot().setTransform(false);
 
-        String sheet = "sprites/cards_4x.png";
-        String jokers = "sprites/jokers_4x.png";
+        String sheet = "sprites/cards_" + quality + ".png";
+        String jokers = "sprites/jokers_" + quality + ".png";
 
         log.debug("Loading services");
         service.register(RenderService.class, new RenderService(sheet, jokers, 1));
@@ -34,7 +35,7 @@ public class GambitGame extends Game {
         service.register(UIAssets.class, new UIAssets());
 
         log.info("Booting up game");
-        service.get(AudioService.class).playMusic();
+//        service.get(AudioService.class).playMusic();
         setScreen(new OpenScreen(this, stage, service));
     }
 }

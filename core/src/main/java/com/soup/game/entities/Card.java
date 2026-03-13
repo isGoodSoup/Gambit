@@ -32,8 +32,8 @@ public class Card extends Actor implements Entity {
         this.points = rank.getPoints();
         this.isJoker = isJoker;
         this.region = region;
-        this.width = region.getRegionWidth()/2f;
-        this.height = region.getRegionHeight()/2f;
+        this.width = region.getRegionWidth();
+        this.height = region.getRegionHeight();
 
         setSize(width, height);
         setPosition(getX(), baseY);
