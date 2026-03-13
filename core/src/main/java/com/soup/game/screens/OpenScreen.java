@@ -14,8 +14,11 @@ import com.soup.game.entities.Logo;
 import com.soup.game.entities.FloatingText;
 import com.soup.game.service.Localization;
 import com.soup.game.service.ServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OpenScreen implements Screen {
+    private static final Logger log = LoggerFactory.getLogger(OpenScreen.class);
     private final Game game;
     private final Stage stage;
     private final ServiceFactory service;
@@ -31,6 +34,7 @@ public class OpenScreen implements Screen {
 
     @Override
     public void show() {
+        log.debug("Loading main menu assets");
         this.group = new Group();
         String start = Localization.lang.t("menu.start");
         this.logo = new Logo();
@@ -53,7 +57,10 @@ public class OpenScreen implements Screen {
             group.addAction(Actions.sequence(
                 Actions.moveBy(0f, Gdx.graphics.getHeight(), 0.5f, Interpolation.sine),
                 Actions.delay(0.5f),
-                Actions.run(() -> game.setScreen(new GameScreen(service, stage)))
+                Actions.run(() -> {
+                    log.info("Starting a new game");
+                    game.setScreen(new GameScreen(service, stage));
+                })
             ));
         }
     }

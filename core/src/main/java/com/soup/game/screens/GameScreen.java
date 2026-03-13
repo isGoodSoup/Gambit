@@ -16,9 +16,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.*;
 import com.soup.game.scene.Hand;
 import com.soup.game.service.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("all")
 public class GameScreen implements Screen {
+    private static final Logger log = LoggerFactory.getLogger(GameScreen.class);
     private final ServiceFactory service;
     private final Stage stage;
     private final Group group;
@@ -50,6 +53,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
+        log.info("Loading new assets and actors");
         stage.addAction(Actions.fadeIn(1f, Interpolation.fade));
         gameService = service.get(GameService.class);
 
@@ -72,6 +76,7 @@ public class GameScreen implements Screen {
             group.addActor(c);
         }
 
+        log.debug("Creating table");
         table = new Table();
         table.setFillParent(true);
         table.bottom().padBottom(25f);
@@ -127,6 +132,7 @@ public class GameScreen implements Screen {
             Actions.delay(0.4f),
             Actions.moveTo(0, 0, 0.8f, Interpolation.sine)
         ));
+        log.info("Ready");
     }
 
     @Override

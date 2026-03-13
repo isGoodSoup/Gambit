@@ -12,17 +12,21 @@ import com.soup.game.meta.GameState;
 import com.soup.game.meta.HandType;
 import com.soup.game.scene.Hand;
 import com.soup.game.scene.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("all")
 public class GameService implements Service {
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private final Table table;
     private final Stage stage;
     private final DeckService deckService;
     private final AudioService audioService;
     private List<Card> lastPlayedCards;
+    private boolean wasHandLogged;
 
     public GameService(Table table, Stage stage, DeckService deckService,
                        AudioService audioService) {
@@ -30,6 +34,7 @@ public class GameService implements Service {
         this.deckService = deckService;
         this.stage = stage;
         this.audioService = audioService;
+        log.info("Dealing cards (for the first time)");
     }
 
     public Table getTable() {
@@ -64,10 +69,15 @@ public class GameService implements Service {
         }
 
         hand.layout(stage, true);
+        log.info("Switching to player turn");
         table.setState(GameState.PLAYER_TURN);
     }
 
     private void playHand() {
+        if(!wasHandLogged) {
+            log.info("Playing selected hand");
+            wasHandLogged = true;
+        }
         Hand hand = table.getHand();
         if(!hand.isReady()) return;
 
@@ -79,7 +89,7 @@ public class GameService implements Service {
         float tableX = Gdx.graphics.getWidth() / 2f;
         float tableY = Gdx.graphics.getHeight() / 2f;
 
-        final int[] finishedCount = {0};
+        final int[] finishedCount = { 0 };
         final int total = selected.size();
 
         for (Card c : selected) {
@@ -104,6 +114,8 @@ public class GameService implements Service {
     }
 
     private void refill(Hand hand) {
+        log.info("Attempting refill...");
+        wasHandLogged = false;
         int missing = hand.getMaxSize() - hand.size();
         if(missing <= 0) {
             hand.clearSelection();
@@ -156,7 +168,11 @@ public class GameService implements Service {
         lastPlayedCards.clear();
         table.addScore(points);
         table.addCurrency(handValue.getValue());
+        log.info("Score!");
+        log.info("Current score: {}", table.getScore());
+        log.info("Current balance: {}", table.getCurrency());
 
+        log.info("Drawing new card(s) (score)");
         while(hand.size() < hand.getMaxSize()) {
             Card newCard = deckService.draw();
             if(newCard == null) {
@@ -189,6 +205,7 @@ public class GameService implements Service {
     }
 
     public void discardHand() {
+        log.info("Discarding card(s)");
         Hand hand = table.getHand();
         List<Card> toDiscard = new ArrayList<>(hand.getSelectedCards());
 
@@ -211,6 +228,7 @@ public class GameService implements Service {
                 })
             ));
 
+            log.info("Drawing new card(s) (discard)");
             Card newCard = deckService.draw();
             if(newCard != null) {
                 float deckX = table.getDeck().getX();
