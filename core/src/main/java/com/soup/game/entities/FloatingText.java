@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.soup.game.intf.Entity;
+import com.soup.game.service.GameService;
 import com.soup.game.service.ServiceFactory;
 import com.soup.game.service.UIAssets;
 
@@ -16,9 +17,9 @@ public class FloatingText extends Label
         setAlignment(com.badlogic.gdx.utils.Align.center);
         addAction(Actions.forever(
             Actions.sequence(
-                Actions.fadeOut(1f, Interpolation.fade),
+                Actions.fadeOut(GameService.gameSpeed, Interpolation.fade),
                 Actions.delay(0.8f),
-                Actions.fadeIn(1f, Interpolation.fade)
+                Actions.fadeIn(GameService.gameSpeed, Interpolation.fade)
             )
         ));
     }

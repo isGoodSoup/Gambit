@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.intf.Entity;
+import com.soup.game.service.GameService;
 
 @SuppressWarnings("all")
 public class Logo extends Actor
@@ -17,7 +18,7 @@ public class Logo extends Actor
         setSize(logo.getWidth(), logo.getHeight());
         setPosition(Gdx.graphics.getWidth()/2f - logo.getWidth()/2f, Gdx.graphics.getHeight() + 100f);
 
-        float duration = 1f;
+        float duration = 1f * GameService.gameSpeed;
         addAction(Actions.delay(duration));
         addAction(Actions.sequence(
             Actions.moveTo(getX(), Gdx.graphics.getHeight()/2f - 150f,

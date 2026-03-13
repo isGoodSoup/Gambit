@@ -22,6 +22,7 @@ import java.util.List;
 public class GameService implements Service {
     public final float deckX = Gdx.graphics.getWidth() - 400f;
     public final float deckY = 50f;
+    public static float gameSpeed = 1f;
 
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private final Table table;
@@ -30,7 +31,6 @@ public class GameService implements Service {
     private final AudioService audioService;
 
     private List<Card> lastPlayedCards;
-    private float gameSpeed = 1f;
 
     private boolean wasHandLogged;
     private boolean hasPlayed;
@@ -276,13 +276,5 @@ public class GameService implements Service {
 
     public void setGameSpeed(float gameSpeed) {
         this.gameSpeed = gameSpeed;
-    }
-
-    public void addSpeed(float i) {
-        this.gameSpeed += i;
-    }
-
-    public void substractSpeed(float i) {
-        this.gameSpeed -= i;
     }
 }

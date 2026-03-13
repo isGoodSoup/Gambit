@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.soup.game.entities.Logo;
 import com.soup.game.entities.FloatingText;
+import com.soup.game.service.GameService;
 import com.soup.game.service.Localization;
 import com.soup.game.service.ServiceFactory;
 import org.slf4j.Logger;
@@ -40,7 +41,8 @@ public class OpenScreen implements Screen {
         this.logo = new Logo();
         this.text = new FloatingText(service, start);
 
-        text.setPosition(Gdx.graphics.getWidth()/2f - text.getWidth()/2f, 150f);
+        text.setPosition(Gdx.graphics.getWidth()/2f
+            - text.getWidth()/2f, 150f);
 
         group.addActor(logo);
         group.addActor(text);
@@ -55,8 +57,8 @@ public class OpenScreen implements Screen {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             group.addAction(Actions.sequence(
-                Actions.moveBy(0f, Gdx.graphics.getHeight(), 0.5f, Interpolation.sine),
-                Actions.delay(0.5f),
+                Actions.moveBy(0f, Gdx.graphics.getHeight(), 0.5f * GameService.gameSpeed, Interpolation.sine),
+                Actions.delay(0.5f * GameService.gameSpeed),
                 Actions.run(() -> {
                     log.info("Starting a new game");
                     game.setScreen(new GameScreen(service, stage));
