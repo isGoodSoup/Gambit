@@ -20,13 +20,20 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public class GameService implements Service {
+    public final float deckX = Gdx.graphics.getWidth() - 400f;
+    public final float deckY = 50f;
+
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private final Table table;
     private final Stage stage;
     private final DeckService deckService;
     private final AudioService audioService;
+
     private List<Card> lastPlayedCards;
+    private float gameSpeed = 1f;
+
     private boolean wasHandLogged;
+    private boolean hasPlayed;
 
     public GameService(Table table, Stage stage, DeckService deckService,
                        AudioService audioService) {
@@ -64,7 +71,7 @@ public class GameService implements Service {
 
         while(hand.size() < hand.getMaxSize()) {
             Card c = deckService.draw();
-            if(c == null) break;
+            if(c == null) { break;   }
             hand.add(c);
         }
 
@@ -86,26 +93,28 @@ public class GameService implements Service {
 
         lastPlayedCards = new ArrayList<>(selected);
 
-        float tableX = Gdx.graphics.getWidth() / 2f;
-        float tableY = Gdx.graphics.getHeight() / 2f;
+        float tableY = Gdx.graphics.getHeight()/2f;
 
         final int[] finishedCount = { 0 };
         final int total = selected.size();
 
-        for (Card c : selected) {
+        for(Card c : selected) {
             c.setAnimating(true);
+
+            float tableX = c.getX();
+            float offScreenY = -100f;
+
             c.addAction(Actions.sequence(
-                Actions.parallel(
-                    Actions.moveTo(tableX, tableY, 0.5f, Interpolation.sineOut),
-                    Actions.scaleBy(0.2f, 0.2f, 0.25f)
-                ),
+                Actions.moveTo(tableX, tableY, 0.2f * gameSpeed, Interpolation.sineOut),
+                Actions.delay(1f),
+                Actions.moveTo(tableX, offScreenY, 0.4f * gameSpeed, Interpolation.pow5In),
                 Actions.run(() -> {
                     c.setAnimating(false);
-                    table.add(c);
                     hand.remove(c);
-                    audioService.playFX(1);
+                    table.add(c);
                     finishedCount[0]++;
-                    if (finishedCount[0] == total) {
+                    if(finishedCount[0] == total) {
+                        hasPlayed = false;
                         refill(hand);
                     }
                 })
@@ -140,13 +149,13 @@ public class GameService implements Service {
 
             newCard.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(targetX, targetY, 0.4f, Interpolation.sineOut)
+                    Actions.moveTo(targetX, targetY, 0.4f * gameSpeed, Interpolation.sineOut)
                 )
             ));
         }
 
         stage.addAction(Actions.sequence(
-            Actions.delay(0.35f),
+            Actions.delay(0.4f * gameSpeed),
             Actions.run(() -> {
                 hand.layout(stage, true);
                 hand.clearSelection();
@@ -179,23 +188,22 @@ public class GameService implements Service {
             if(newCard == null) {
                 break;
             }
-            float deckX = table.getDeck().getX();
-            float deckY = table.getDeck().getY();
             newCard.setPosition(deckX, deckY);
-            newCard.getColor().a = 0f;
+            newCard.flip();
             hand.add(newCard);
             float targetX = newCard.getX();
             float targetY = newCard.getY();
 
             newCard.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                    Actions.moveTo(targetX, targetY, 0.3f * gameSpeed, Interpolation.sineOut),
+                    Actions.run(newCard::flip)
                 )
             ));
         }
 
         stage.addAction(Actions.sequence(
-            Actions.delay(0.4f),
+            Actions.delay(0.4f * gameSpeed),
             Actions.run(() -> {
                 hand.layout(stage, true);
                 lastPlayedCards.clear();
@@ -219,8 +227,8 @@ public class GameService implements Service {
             c.setAnimating(true);
             c.addAction(Actions.sequence(
                 Actions.parallel(
-                    Actions.moveTo(c.getX(), -100f, 0.25f, Interpolation.sine),
-                    Actions.scaleBy(0.2f, 0.2f, 0.15f)
+                    Actions.moveTo(c.getX(), -100f, 0.25f * gameSpeed, Interpolation.sine),
+                    Actions.scaleBy(0.2f, 0.2f * gameSpeed, 0.15f)
                 ),
                 Actions.run(() -> {
                     c.setAnimating(false);
@@ -244,7 +252,7 @@ public class GameService implements Service {
 
                 newCard.addAction(Actions.sequence(
                     Actions.parallel(
-                        Actions.moveTo(targetX, targetY, 0.3f, Interpolation.sineOut)
+                        Actions.moveTo(targetX, targetY, 0.4f * gameSpeed, Interpolation.sineOut)
                     )
                 ));
             }
@@ -252,7 +260,7 @@ public class GameService implements Service {
 
         hand.clearSelection();
         stage.addAction(Actions.sequence(
-            Actions.delay(0.4f),
+            Actions.delay(0.4f  * gameSpeed),
             Actions.run(() -> {
                 hand.layout(stage, true);
             })
@@ -260,5 +268,21 @@ public class GameService implements Service {
         hand.setReady(false);
 
         table.setState(GameState.PLAYER_TURN);
+    }
+
+    public float getGameSpeed() {
+        return gameSpeed;
+    }
+
+    public void setGameSpeed(float gameSpeed) {
+        this.gameSpeed = gameSpeed;
+    }
+
+    public void addSpeed(float i) {
+        this.gameSpeed += i;
+    }
+
+    public void substractSpeed(float i) {
+        this.gameSpeed -= i;
     }
 }

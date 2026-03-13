@@ -1,17 +1,25 @@
 package com.soup.game.entities;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.soup.game.intf.Entity;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
 
 @SuppressWarnings("all")
-public class Card extends Actor implements Entity {
+public class Card extends Actor
+    implements Entity {
+    private static final TextureRegion back =
+        new TextureRegion(new Texture("sprites/cards_back.png"));
     private static long NEXT_ID = 1;
     private final long id;
-    private final TextureRegion region;
+    private TextureRegion region;
     private final Suit suit;
     private final Rank rank;
     private static float globalTime = 0f;
@@ -24,6 +32,7 @@ public class Card extends Actor implements Entity {
     private boolean isDragging;
     private boolean isSelected;
     private boolean isAnimating;
+    private boolean isFlipped;
 
     public Card(Suit suit, Rank rank, boolean isJoker, TextureRegion region) {
         this.id = NEXT_ID++;
@@ -103,7 +112,7 @@ public class Card extends Actor implements Entity {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.draw(region, getX(), getY(), getWidth(), getHeight());
+        batch.draw(isFlipped ? back : region, getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
@@ -165,5 +174,15 @@ public class Card extends Actor implements Entity {
 
     public float getBaseY() {
         return baseY;
+    }
+
+    public void flip() {
+        setOrigin(getWidth()/2f, getHeight()/2f);
+        addAction(Actions.sequence(
+            Actions.scaleBy(-getWidth()/2f, 1f),
+            Actions.run(() -> isFlipped = !isFlipped),
+            Actions.scaleTo(1f, 1f)
+        ));
+
     }
 }

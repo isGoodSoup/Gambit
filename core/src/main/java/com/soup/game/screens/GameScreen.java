@@ -76,6 +76,9 @@ public class GameScreen implements Screen {
             group.addActor(c);
         }
 
+        deck.setPosition(gameService.deckX, gameService.deckY);
+        group.addActor(deck);
+
         log.debug("Creating table");
         table = new Table();
         table.setFillParent(true);

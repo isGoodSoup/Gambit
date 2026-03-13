@@ -20,7 +20,7 @@ public class Deck extends Actor
     public Deck() {
         this.cards = new ArrayList<>();
         setPosition(getX(), getY());
-        setSize(back.getWidth()/2f, back.getHeight()/2f);
+        setSize(back.getWidth(), back.getHeight());
     }
 
     @Override
