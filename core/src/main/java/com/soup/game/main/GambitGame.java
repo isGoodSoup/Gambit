@@ -34,6 +34,7 @@ public class GambitGame extends Game {
         service.register(UIAssets.class, new UIAssets());
 
         log.info("Booting up game");
+        service.get(AudioService.class).playMusic();
         setScreen(new OpenScreen(this, stage, service));
     }
 }

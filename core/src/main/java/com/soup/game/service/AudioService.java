@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.soup.game.intf.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AudioService implements Service {
+    private static final Logger log = LoggerFactory.getLogger(AudioService.class);
     private Sound[] fx;
     private Music music;
     private float masterGain = 1f;
@@ -50,6 +53,7 @@ public class AudioService implements Service {
         music.play();
     }
 
+    @SuppressWarnings("all")
     public Sound playFX(int i) {
         Sound sound = fx[i];
         sound.play(masterGain * sfxGain);
