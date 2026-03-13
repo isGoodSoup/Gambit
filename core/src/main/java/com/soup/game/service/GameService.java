@@ -106,7 +106,7 @@ public class GameService implements Service {
 
             c.addAction(Actions.sequence(
                 Actions.moveTo(tableX, tableY, 0.2f * gameSpeed, Interpolation.sineOut),
-                Actions.delay(1f),
+                Actions.delay(0.4f * gameSpeed),
                 Actions.moveTo(tableX, offScreenY, 0.4f * gameSpeed, Interpolation.pow5In),
                 Actions.run(() -> {
                     c.setAnimating(false);
@@ -176,7 +176,6 @@ public class GameService implements Service {
         HandType handValue = hand.evaluate(lastPlayedCards);
         float points = hand.getValue(handValue, lastPlayedCards);
         if(hand.getJokerCount() > 0) {
-            hand.setJokerMultiplier(hand.getJokerCount());
             points *= hand.getJokerMultiplier();
         }
         lastPlayedCards.clear();

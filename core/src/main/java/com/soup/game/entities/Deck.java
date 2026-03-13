@@ -40,8 +40,8 @@ public class Deck extends Actor
             }
         }
 
-        add(new Joker(100f, true, renderService.getRegion(Jokers.BLACK)));
-        add(new Joker(100f, true, renderService.getRegion(Jokers.RED)));
+        add(new Joker(true, renderService.getRegion(Jokers.BLACK)));
+        add(new Joker(true, renderService.getRegion(Jokers.RED)));
     }
 
     public void add(Card c) {

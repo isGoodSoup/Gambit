@@ -20,8 +20,8 @@ public class Card extends Actor
     private static long NEXT_ID = 1;
     private final long id;
     private TextureRegion region;
-    private final Suit suit;
-    private final Rank rank;
+    private Suit suit;
+    private Rank rank;
     private static float globalTime = 0f;
     private final float points;
     private final float moveAmount = 16f;
@@ -87,11 +87,9 @@ public class Card extends Actor
         });
     }
 
-    public Card(Suit suit, float points, boolean isJoker, TextureRegion region) {
+    public Card(boolean isJoker, TextureRegion region) {
         this.id = NEXT_ID++;
-        this.suit = suit;
-        this.rank = null;
-        this.points = points;
+        this.points = 50f;
         this.isJoker = isJoker;
         this.region = region;
     }

@@ -9,12 +9,15 @@ import com.soup.game.entities.Joker;
 import com.soup.game.meta.HandType;
 import com.soup.game.meta.Rank;
 import com.soup.game.meta.Suit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class Hand {
     private static final int MAX_SIZE = 8;
     private static final int MAX_SELECT = 5;
+    private static final Logger log = LoggerFactory.getLogger(Hand.class);
     private final List<Card> cards;
     private final List<Card> selected;
     private int jokerCount = 0;
@@ -163,10 +166,13 @@ public class Hand {
     public HandType evaluate(List<Card> activeHand) {
         if(activeHand.isEmpty()) { return HandType.HIGH_CARD; }
 
+        jokerCount = 0;
+        jokerMultiplier = 1;
         List<Card> nonJokers = new ArrayList<>();
         for(Card c : activeHand) {
             if(c instanceof Joker) {
                 jokerCount++;
+                jokerMultiplier += 1;
             } else {
                 nonJokers.add(c);
             }
@@ -175,10 +181,32 @@ public class Hand {
         int totalCards = nonJokers.size() + jokerCount;
 
         Map<Rank, Integer> rankCounts = new HashMap<>();
-        Map<Suit, Integer> suitCounts = new HashMap<>();
         for(Card c : nonJokers) {
             rankCounts.put(c.getRank(), rankCounts.getOrDefault(c.getRank(), 0) + 1);
+        }
+
+        Map<Suit, Integer> suitCounts = new HashMap<>();
+        for(Card c : nonJokers) {
             suitCounts.put(c.getSuit(), suitCounts.getOrDefault(c.getSuit(), 0) + 1);
+        }
+
+        Suit bestSuit = suitCounts.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse(Suit.HEARTS);
+
+        for(Card c : activeHand) {
+            if(c instanceof Joker joker) {
+                joker.setVirtualSuit(bestSuit);
+            }
+        }
+
+        Map<Suit, Integer> totalSuitCounts = new HashMap<>();
+        for(Card c : activeHand) {
+            Suit s = c.getSuit();
+            if(s != null) {
+                totalSuitCounts.put(s, totalSuitCounts.getOrDefault(s, 0) + 1);
+            }
         }
 
         if(totalCards < 5) {
@@ -197,25 +225,47 @@ public class Hand {
             return HandType.HIGH_CARD;
         }
 
-        List<Integer> ranks = nonJokers.stream().map(c ->
-            c.getRank().ordinal()).sorted().toList();
+        Set<Integer> rankSet = new HashSet<>();
+        for(Card c : activeHand) {
+            Rank r = c.getRank();
+            if(r != null) {
+                rankSet.add(r.ordinal());
+            }
+        }
 
         boolean isStraight = false;
         for(int start = 0; start <= 14 - 5; start++) {
-            int needed = 0;
-            for(int offset = 0; offset < 5; offset++) {
-                if(!ranks.contains(start + offset)) {
-                    needed++;
+            int missing = 0;
+            for(int i = 0; i < 5; i++) {
+                if(!rankSet.contains(start + i)) {
+                    missing++;
                 }
             }
-            if(needed <= jokerCount) { isStraight = true; break; }
+            if(missing <= jokerCount) {
+                isStraight = true;
+                break;
+            }
+        }
+        int missingAceLow = 0;
+        for(int r : List.of(0, 1, 2, 3, 12)) {
+            if(!rankSet.contains(r)) {
+                missingAceLow++;
+            }
+        }
+        if(missingAceLow <= jokerCount) {
+            isStraight = true;
         }
 
-        int finalJokerCount = jokerCount;
-        boolean isFlush = suitCounts.values().stream().anyMatch(count -> count + finalJokerCount >= 5);
-        boolean isRoyal = isFlush && ranks.contains(Rank.TEN.ordinal()) && ranks.contains(Rank.JACK.ordinal())
-            && ranks.contains(Rank.QUEEN.ordinal()) && ranks.contains(Rank.KING.ordinal())
-            && ranks.contains(Rank.ACE.ordinal());
+        boolean isFlush = totalSuitCounts.values().stream().anyMatch(count -> count >= 5);
+
+        int neededForRoyal = 0;
+        for(Rank r : List.of(Rank.TEN, Rank.JACK, Rank.QUEEN, Rank.KING, Rank.ACE)) {
+            if(!rankSet.contains(r.ordinal())) {
+                neededForRoyal++;
+            }
+        }
+
+        boolean isRoyal = isFlush && neededForRoyal <= jokerCount;
 
         int pairs = 0, trips = 0, quads = 0;
         for(int count : rankCounts.values()) {

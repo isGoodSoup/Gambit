@@ -18,7 +18,7 @@ public class FloatingText extends Label
         addAction(Actions.forever(
             Actions.sequence(
                 Actions.fadeOut(GameService.gameSpeed, Interpolation.fade),
-                Actions.delay(0.8f),
+                Actions.delay(0.8f * GameService.gameSpeed),
                 Actions.fadeIn(GameService.gameSpeed, Interpolation.fade)
             )
         ));

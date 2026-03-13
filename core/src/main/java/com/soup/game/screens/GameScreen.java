@@ -112,16 +112,16 @@ public class GameScreen implements Screen {
         stage.addActor(table);
 
         stage.addActor(group);
-        
+
         table.setPosition(0, -Gdx.graphics.getHeight());
         table.addAction(Actions.sequence(
-            Actions.delay(0.4f),
+            Actions.delay(0.4f * GameService.gameSpeed),
             Actions.moveTo(0, 0, 0.8f, Interpolation.sine)
         ));
 
         group.setPosition(0, -Gdx.graphics.getHeight());
         group.addAction(Actions.sequence(
-            Actions.delay(0.4f),
+            Actions.delay(0.4f * GameService.gameSpeed),
             Actions.moveTo(0, 0, 0.8f, Interpolation.sine)
         ));
         log.info("Ready");
